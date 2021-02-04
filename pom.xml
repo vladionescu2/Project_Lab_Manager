@@ -20,10 +20,6 @@
                 <configuration>
                     <source>7</source>
                     <target>7</target>
-<!--                    <compilerArgs>-->
-<!--                        <arg>-cp</arg>-->
-<!--                        <arg>${cp}:opt/tomcat/bin:opt/tomcat/lib</arg>-->
-<!--                    </compilerArgs>-->
                 </configuration>
             </plugin>
             <plugin>
@@ -55,57 +51,32 @@
                     </execution>
                 </executions>
             </plugin>
-
-<!--            <plugin>-->
-<!--                &lt;!&ndash;-->
-<!--                  Use Groovy to read classpath and store into-->
-<!--                  file named value of property <cpfile>-->
-
-<!--                  In second step use Groovy to read the contents of-->
-<!--                  the file into a new property named <cp>-->
-
-<!--                  In the compiler plugin this is used to create a-->
-<!--                  valid classpath-->
-<!--                &ndash;&gt;-->
-<!--                <groupId>org.codehaus.gmavenplus</groupId>-->
-<!--                <artifactId>gmavenplus-plugin</artifactId>-->
-<!--                <version>1.12.0</version>-->
-<!--                <dependencies>-->
-<!--                    <dependency>-->
-<!--                        <groupId>org.codehaus.groovy</groupId>-->
-<!--                        <artifactId>groovy-all</artifactId>-->
-<!--                        &lt;!&ndash; any version of Groovy \>= 1.5.0 should work here &ndash;&gt;-->
-<!--                        <version>3.0.6</version>-->
-<!--                        <type>pom</type>-->
-<!--                        <scope>runtime</scope>-->
-<!--                    </dependency>-->
-<!--                </dependencies>-->
-<!--                <executions>-->
-<!--                    <execution>-->
-<!--                        <id>read-classpath</id>-->
-<!--                        <phase>validate</phase>-->
-<!--                        <goals>-->
-<!--                            <goal>execute</goal>-->
-<!--                        </goals>-->
-<!--                    </execution>-->
-<!--                </executions>-->
-<!--                <configuration>-->
-<!--                    <scripts>-->
-<!--                        <script><![CDATA[-->
-<!--                def file = new File(project.properties.cpfile)-->
-<!--                /* create a new property named 'cp'*/-->
-<!--                project.properties.cp = file.getText()-->
-<!--                println '<<< Retrieving classpath into new property named <cp> >>>'-->
-<!--                println 'cp = ' + project.properties.cp-->
-<!--              ]]></script>-->
-<!--                    </scripts>-->
-<!--                </configuration>-->
-<!--            </plugin>-->
-
         </plugins>
     </build>
 
     <dependencies>
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-api</artifactId>
+            <version>2.14.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-core</artifactId>
+            <version>2.14.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-web</artifactId>
+            <version>2.14.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-taglib</artifactId>
+            <version>2.14.0</version>
+        </dependency>
+
+        <!-- TOMCAT DEPENDENCIES -->
         <dependency>
             <groupId>extra.dependency</groupId>
             <artifactId>bootstrap</artifactId>

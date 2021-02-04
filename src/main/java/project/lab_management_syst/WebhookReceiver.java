@@ -1,5 +1,8 @@
 package project.lab_management_syst;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -12,6 +15,8 @@ import javax.servlet.http.HttpServletResponse;
 
 @WebServlet("/receiver")
 public class WebhookReceiver extends HttpServlet {
+    private static final Logger logger = LogManager.getLogger();
+
     @Override
     protected  void doGet(HttpServletRequest request,
                           HttpServletResponse response) throws IOException, ServletException {
@@ -21,7 +26,10 @@ public class WebhookReceiver extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request,
                          HttpServletResponse response) throws IOException{
-        System.out.println("Called with method" + request.getMethod());
+//        System.out.println("Called with method" + request.getMethod());
+
+        System.out.println("Log Statement");
+        logger.info("Called with method" + request.getMethod());
 
         String line;
         try(BufferedReader reader = request.getReader()) {
@@ -31,6 +39,8 @@ public class WebhookReceiver extends HttpServlet {
         catch(IOException e) {
             e.printStackTrace();
         }
+
+        this.getServletContext().log("Test");
 
         response.setContentType("text/html");
         response.setCharacterEncoding("UTF-8");
