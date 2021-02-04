@@ -1,6 +1,3 @@
 /lab_management_system.iml
 /.idea
-/build.properties
-/build
-/dist
-/docs
+/target
