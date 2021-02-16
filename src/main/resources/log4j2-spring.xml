@@ -27,8 +27,9 @@
 
     </Appenders>
     <Loggers>
-        <Logger name="project.lab_management_syst" level="trace">
+        <Logger name="project.lab_management_syst.web" level="trace">
             <AppenderRef ref="LogToRollingRandomAccessFile"/>
+            <AppenderRef ref="Console" />
         </Logger>
         <Root level="trace">
             <AppenderRef ref="Console"/>

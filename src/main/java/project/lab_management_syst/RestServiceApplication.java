@@ -1,0 +1,17 @@
+package project.lab_management_syst;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.domain.EntityScan;
+import org.springframework.boot.web.servlet.ServletComponentScan;
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
+
+@ServletComponentScan
+@SpringBootApplication(scanBasePackages = "project.lab_management_syst")
+@EnableJpaRepositories("project.lab_management_syst.persistence.repo")
+@EntityScan("project.lab_management_syst.persistence.model")
+public class RestServiceApplication {
+    public static void main(String[] args) {
+        SpringApplication.run(RestServiceApplication.class, args);
+    }
+}
