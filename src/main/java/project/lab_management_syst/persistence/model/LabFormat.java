@@ -9,14 +9,19 @@ import java.util.Map;
 @Entity
 public class LabFormat {
     @Id
-    public String gitLabRepoName;
+    public String repoNamingSchema;
 
     public String moduleCode;
 
     @ElementCollection
     public Map<String, LocalDateTime> labExercises;
 
+    @Override
     public String toString() {
-        return String.format("Lab[gitLabRepoName=%s, moduleCode=%s, labExercises=%s]", gitLabRepoName, moduleCode, labExercises);
+        return "LabFormat{" +
+                "repoNamingSchema='" + repoNamingSchema + '\'' +
+                ", moduleCode='" + moduleCode + '\'' +
+                ", labExercises=" + labExercises +
+                '}';
     }
 }

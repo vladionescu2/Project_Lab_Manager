@@ -1,0 +1,130 @@
+### Submit one lab correctly
+POST http://localhost:8080/receiver
+Content-Type: application/json
+X-Gitlab-Event: Tag Push Hook
+X-Gitlab-Token: secret
+
+{
+  "object_kind": "tag_push",
+  "event_name": "tag_push",
+  "ref": "refs/tags/ex_1",
+  "checkout_sha": "a4ed4f61d79165db21749e3a44325c0dcd81549a",
+  "user_username": "j28172vi",
+  "project": {
+    "name": "COMP0_Lab_j28172vi"
+  }
+}
+
+### Submit a lab to the wrong repo
+POST http://localhost:8080/receiver
+Content-Type: application/json
+X-Gitlab-Event: Tag Push Hook
+X-Gitlab-Token: secret
+
+{
+  "object_kind": "tag_push",
+  "event_name": "tag_push",
+  "ref": "refs/tags/ex_1",
+  "checkout_sha": "a4ed4f61d79165db21749e3a44325c0dcd81549a",
+  "user_username": "j28172vi",
+  "project": {
+    "name": "COMPX_Lab_j28172vi"
+  }
+}
+
+### Submit a lab using the wrong tag
+POST http://localhost:8080/receiver
+Content-Type: application/json
+X-Gitlab-Event: Tag Push Hook
+X-Gitlab-Token: secret
+
+{
+  "object_kind": "tag_push",
+  "event_name": "tag_push",
+  "ref": "refs/tags/ex_X",
+  "checkout_sha": "f1825cad11c1469da78b245f6bfc64abf5bbc8ad",
+  "user_username": "j28172vi",
+  "project": {
+    "name": "COMP0_Lab_j28172vi"
+  }
+}
+### MORE SUBMISSIONS
+POST http://localhost:8080/receiver
+Content-Type: application/json
+X-Gitlab-Event: Tag Push Hook
+X-Gitlab-Token: secret
+
+{
+  "object_kind": "tag_push",
+  "event_name": "tag_push",
+  "ref": "refs/tags/ex_2",
+  "checkout_sha": "af4092cf65bd1042794ae7e24614f79ed27e06de",
+  "user_username": "j28172vi",
+  "project": {
+    "name": "COMP0_Lab_j28172vi"
+  }
+}
+###
+POST http://localhost:8080/receiver
+Content-Type: application/json
+X-Gitlab-Event: Tag Push Hook
+X-Gitlab-Token: secret
+
+{
+  "object_kind": "tag_push",
+  "event_name": "tag_push",
+  "ref": "refs/tags/ex_3",
+  "checkout_sha": "7ad6fda238e6a952ee7ef5c29689e0c1c867b10d",
+  "user_username": "j28172vi",
+  "project": {
+    "name": "COMP0_Lab_j28172vi"
+  }
+}
+###
+POST http://localhost:8080/receiver
+Content-Type: application/json
+X-Gitlab-Event: Tag Push Hook
+X-Gitlab-Token: secret
+
+{
+  "object_kind": "tag_push",
+  "event_name": "tag_push",
+  "ref": "refs/tags/ex_1",
+  "checkout_sha": "fe173ef77b7ed4eab5bb24ddc8227075fa5ba8bc",
+  "user_username": "j28172vi",
+  "project": {
+    "name": "COMP1_Lab_j28172vi"
+  }
+}
+###
+POST http://localhost:8080/receiver
+Content-Type: application/json
+X-Gitlab-Event: Tag Push Hook
+X-Gitlab-Token: secret
+
+{
+  "object_kind": "tag_push",
+  "event_name": "tag_push",
+  "ref": "refs/tags/ex_2",
+  "checkout_sha": "81d271268a1c727bd0f9e88da21d3417bbe8778a",
+  "user_username": "j28172vi",
+  "project": {
+    "name": "COMP1_Lab_j28172vi"
+  }
+}
+### Different student
+POST http://localhost:8080/receiver
+Content-Type: application/json
+X-Gitlab-Event: Tag Push Hook
+X-Gitlab-Token: secret
+
+{
+  "object_kind": "tag_push",
+  "event_name": "tag_push",
+  "ref": "refs/tags/ex_1",
+  "checkout_sha": "a571f35d057a5c5bfa3f7f56f86ddef740193bde",
+  "user_username": "k28172sl",
+  "project": {
+    "name": "COMP0_Lab_k28172sl"
+  }
+}

@@ -9,7 +9,7 @@ public class Student {
 
     public Student() {
         super();
-        this.currentLabs = new HashMap<String, StudentLabs>();
+        this.currentLabs = new HashMap<String, StudentRepo>();
     }
 
     public Student(String userName) {
@@ -21,6 +21,11 @@ public class Student {
     public String userName;
 
     @OneToMany(cascade = CascadeType.ALL)
-    @MapKey(name="courseCode")
-    public Map<String, StudentLabs> currentLabs;
+    @MapKey(name="repoName")
+    @JoinColumn
+    public Map<String, StudentRepo> currentLabs;
+
+    public StudentRepo generateStudentRepo(LabFormat labFormat) {
+        return new StudentRepo(labFormat, userName);
+    }
 }

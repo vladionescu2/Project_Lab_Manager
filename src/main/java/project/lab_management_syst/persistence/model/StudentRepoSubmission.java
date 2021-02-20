@@ -3,20 +3,20 @@ package project.lab_management_syst.persistence.model;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import java.time.LocalDateTime;
-import java.util.Date;
 
 @Entity
-public class StudentSubmission {
+public class StudentRepoSubmission {
     @Id
     public String commitId;
     public String submissionTag;
     public LocalDateTime timeStamp;
+    public boolean isLate = false;
 
-    public StudentSubmission() {
+    public StudentRepoSubmission() {
         super();
     }
 
-    public StudentSubmission(String commitId, String submissionTag, LocalDateTime timeStamp) {
+    public StudentRepoSubmission(String commitId, String submissionTag, LocalDateTime timeStamp) {
         this.timeStamp = timeStamp;
         this.commitId = commitId;
         this.submissionTag = submissionTag;
