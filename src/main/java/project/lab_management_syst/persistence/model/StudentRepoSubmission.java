@@ -1,16 +1,21 @@
 package project.lab_management_syst.persistence.model;
 
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import java.time.LocalDateTime;
 
 @Entity
+@Data
+@EqualsAndHashCode
 public class StudentRepoSubmission {
     @Id
-    public String commitId;
-    public String submissionTag;
-    public LocalDateTime timeStamp;
-    public boolean isLate = false;
+    String commitId;
+    String submissionTag;
+    LocalDateTime timeStamp;
+    boolean isLate = false;
 
     public StudentRepoSubmission() {
         super();

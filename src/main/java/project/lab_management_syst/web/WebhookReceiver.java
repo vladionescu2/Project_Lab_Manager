@@ -67,15 +67,15 @@ public class WebhookReceiver {
         logger.info("Commit Id: " + commitId);
 
         StudentRepoSubmission newSubmission = new StudentRepoSubmission(commitId, tag, timeStamp);
-        newSubmission.isLate = isLate;
+        newSubmission.setLate(isLate);
 
-        StudentRepo newLab = currentStudent.currentLabs.get(repoName);
+        StudentRepo newLab = currentStudent.getCurrentLabs().get(repoName);
         if (newLab == null) {
             logger.info("Creating new StudentRepo called " + repoName);
             newLab = currentStudent.generateStudentRepo(labFormat);
         }
-        newLab.submissions.put(newSubmission.submissionTag, newSubmission);
-        currentStudent.currentLabs.put(labFormat.repoNamingSchema, newLab);
+        newLab.getSubmissions().put(newSubmission.getSubmissionTag(), newSubmission);
+        currentStudent.getCurrentLabs().put(labFormat.repoNamingSchema, newLab);
         studentRepository.save(currentStudent);
 
         logger.info("Saved new submission");

@@ -1,10 +1,15 @@
 package project.lab_management_syst.persistence.model;
 
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+
 import javax.persistence.*;
 import java.util.HashMap;
 import java.util.Map;
 
 @Entity
+@Data
+@EqualsAndHashCode
 public class Student {
 
     public Student() {
@@ -18,12 +23,12 @@ public class Student {
     }
 
     @Id
-    public String userName;
+    String userName;
 
     @OneToMany(cascade = CascadeType.ALL)
     @MapKey(name="repoName")
     @JoinColumn
-    public Map<String, StudentRepo> currentLabs;
+    Map<String, StudentRepo> currentLabs;
 
     public StudentRepo generateStudentRepo(LabFormat labFormat) {
         return new StudentRepo(labFormat, userName);

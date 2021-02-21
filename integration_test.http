@@ -128,3 +128,19 @@ X-Gitlab-Token: secret
     "name": "COMP0_Lab_k28172sl"
   }
 }
+### Late submission
+POST http://localhost:8080/receiver
+Content-Type: application/json
+X-Gitlab-Event: Tag Push Hook
+X-Gitlab-Token: secret
+
+{
+  "object_kind": "tag_push",
+  "event_name": "tag_push",
+  "ref": "refs/tags/ex_3",
+  "checkout_sha": "58f2500d86f76725679abb6b0fb645d1117dade8",
+  "user_username": "j28172vi",
+  "project": {
+    "name": "COMP2_Lab_j28172vi"
+  }
+}

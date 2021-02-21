@@ -1,5 +1,7 @@
 package project.lab_management_syst.persistence.model;
 
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 import org.dom4j.tree.AbstractEntity;
 
 import javax.persistence.*;
@@ -7,18 +9,20 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Entity
+@Data
+@EqualsAndHashCode
 public class StudentRepo {
     @Id
-    public String repoName;
+    String repoName;
 
     @ManyToOne
     @JoinColumn
-    public LabFormat lab;
+    LabFormat lab;
 
     @OneToMany(cascade = CascadeType.ALL)
     @MapKey(name="submissionTag")
     @JoinColumn
-    public Map<String, StudentRepoSubmission> submissions;
+    Map<String, StudentRepoSubmission> submissions;
 
     public StudentRepo() {
         super();
