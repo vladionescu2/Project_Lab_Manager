@@ -2,7 +2,6 @@ package project.lab_management_syst.persistence.model;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import org.dom4j.tree.AbstractEntity;
 
 import javax.persistence.*;
 import java.util.HashMap;
