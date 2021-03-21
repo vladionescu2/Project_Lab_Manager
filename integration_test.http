@@ -128,22 +128,6 @@ X-Gitlab-Token: secret
     "name": "COMP1_Lab_j28172vi"
   }
 }
-### Different student
-POST http://localhost:8080/receiver
-Content-Type: application/json
-X-Gitlab-Event: Tag Push Hook
-X-Gitlab-Token: secret
-
-{
-  "object_kind": "tag_push",
-  "event_name": "tag_push",
-  "ref": "refs/tags/ex_1",
-  "checkout_sha": "a571f35d057a5c5bfa3f7f56f86ddef740193bde",
-  "user_username": "k28172sl",
-  "project": {
-    "name": "COMP0_Lab_k28172sl"
-  }
-}
 ### Late submission
 POST http://localhost:8080/receiver
 Content-Type: application/json
@@ -188,7 +172,7 @@ X-Gitlab-Token: secret
   "object_kind": "tag_push",
   "event_name": "tag_push",
   "ref": "refs/tags/ex_1",
-  "checkout_sha": "58f2500d8df76725679dbb6b0fb645d1117dade8",
+  "checkout_sha": "8b45d83977b8e47363e6e0117309e984028e8b02",
   "user_username": "j28172vi",
   "project": {
     "name": "COMP2_Lab_j28172vi"
@@ -198,3 +182,133 @@ X-Gitlab-Token: secret
 ### Get submission
 GET http://localhost:8080/submission/j28172vi
 Content-Type: application/json
+
+### Test Student 1
+POST http://localhost:8080/receiver
+Content-Type: application/json
+X-Gitlab-Event: Tag Push Hook
+X-Gitlab-Token: secret
+
+{
+  "object_kind": "tag_push",
+  "event_name": "tag_push",
+  "ref": "refs/tags/ex_1",
+  "checkout_sha": "a571f35d057a5c5bfa3f7f56f86ddef740193bde",
+  "user_username": "student1",
+  "project": {
+    "name": "COMP0_Lab_student1"
+  }
+}
+### Test Student 1
+POST http://localhost:8080/receiver
+Content-Type: application/json
+X-Gitlab-Event: Tag Push Hook
+X-Gitlab-Token: secret
+
+{
+  "object_kind": "tag_push",
+  "event_name": "tag_push",
+  "ref": "refs/tags/ex_2",
+  "checkout_sha": "4d63f1f36ac8bc9c458470c8af1ad467892a93fc",
+  "user_username": "student1",
+  "project": {
+    "name": "COMP0_Lab_student1"
+  }
+}
+### Test Student 1
+POST http://localhost:8080/receiver
+Content-Type: application/json
+X-Gitlab-Event: Tag Push Hook
+X-Gitlab-Token: secret
+
+{
+  "object_kind": "tag_push",
+  "event_name": "tag_push",
+  "ref": "refs/tags/ex_3",
+  "checkout_sha": "afe8c919b9baf16105e24da73ab032d41a14f6c1",
+  "user_username": "student1",
+  "project": {
+    "name": "COMP0_Lab_student1"
+  }
+}
+### Test Student 1
+POST http://localhost:8080/receiver
+Content-Type: application/json
+X-Gitlab-Event: Tag Push Hook
+X-Gitlab-Token: secret
+
+{
+  "object_kind": "tag_push",
+  "event_name": "tag_push",
+  "ref": "refs/tags/ex_1",
+  "checkout_sha": "6a919953262debce7ef91d4801adcd2f678718de",
+  "user_username": "student1",
+  "project": {
+    "name": "COMP1_Lab_student1"
+  }
+}
+### Test Student 1
+POST http://localhost:8080/receiver
+Content-Type: application/json
+X-Gitlab-Event: Tag Push Hook
+X-Gitlab-Token: secret
+
+{
+  "object_kind": "tag_push",
+  "event_name": "tag_push",
+  "ref": "refs/tags/ex_2",
+  "checkout_sha": "8bc6230f11a770cba5d5e90bbba1261b664641bd",
+  "user_username": "student1",
+  "project": {
+    "name": "COMP1_Lab_student1"
+  }
+}
+### Test Student 1
+POST http://localhost:8080/receiver
+Content-Type: application/json
+X-Gitlab-Event: Tag Push Hook
+X-Gitlab-Token: secret
+
+{
+  "object_kind": "tag_push",
+  "event_name": "tag_push",
+  "ref": "refs/tags/ex_3",
+  "checkout_sha": "eb468f3b30451a2f1158db0ac6a6fa48a12c53ec",
+  "user_username": "student1",
+  "project": {
+    "name": "COMP1_Lab_student1"
+  }
+}
+### Test Student 1
+POST http://localhost:8080/receiver
+Content-Type: application/json
+X-Gitlab-Event: Tag Push Hook
+X-Gitlab-Token: secret
+
+{
+  "object_kind": "tag_push",
+  "event_name": "tag_push",
+  "ref": "refs/tags/ex_1",
+  "checkout_sha": "c42914a7f2ce445aef8b73f80cb4460d7ca0b183",
+  "user_username": "student1",
+  "project": {
+    "name": "COMP2_Lab_student1"
+  }
+}
+### Test Student 2
+POST http://localhost:8080/receiver
+Content-Type: application/json
+X-Gitlab-Event: Tag Push Hook
+X-Gitlab-Token: secret
+
+{
+  "object_kind": "tag_push",
+  "event_name": "tag_push",
+  "ref": "refs/tags/ex_1",
+  "checkout_sha": "c0819237b5898f1be9f4f69880ec775fdd20f2c0",
+  "user_username": "student2",
+  "project": {
+    "name": "COMP0_Lab_student1"
+  }
+}
+

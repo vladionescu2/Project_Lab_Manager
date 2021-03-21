@@ -16,6 +16,7 @@ public class StudentRepoSubmission {
     String submissionTag;
     LocalDateTime timeStamp;
     boolean isLate = false;
+    boolean isMarked = false;
 
     public StudentRepoSubmission() {
         super();
