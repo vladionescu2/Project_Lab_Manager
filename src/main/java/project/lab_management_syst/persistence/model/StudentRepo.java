@@ -1,5 +1,7 @@
 package project.lab_management_syst.persistence.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -16,11 +18,16 @@ public class StudentRepo {
 
     @ManyToOne
     @JoinColumn
+    @JsonBackReference
+    Student student;
+
+    @ManyToOne
+    @JoinColumn
     LabFormat lab;
 
-    @OneToMany(cascade = CascadeType.ALL)
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "studentRepo")
     @MapKey(name="submissionTag")
-    @JoinColumn
+    @JsonManagedReference
     Map<String, StudentRepoSubmission> submissions;
 
     public StudentRepo() {

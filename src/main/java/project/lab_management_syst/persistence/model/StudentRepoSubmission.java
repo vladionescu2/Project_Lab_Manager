@@ -1,10 +1,13 @@
 package project.lab_management_syst.persistence.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import java.time.LocalDateTime;
 
 @Entity
@@ -17,6 +20,11 @@ public class StudentRepoSubmission {
     LocalDateTime timeStamp;
     boolean isLate = false;
     boolean isMarked = false;
+
+    @ManyToOne
+    @JoinColumn()
+    @JsonBackReference
+    StudentRepo studentRepo;
 
     public StudentRepoSubmission() {
         super();

@@ -74,6 +74,8 @@ public class WebhookReceiver {
             logger.info("Creating new StudentRepo called " + repoName);
             newLab = currentStudent.generateStudentRepo(labFormat);
         }
+        newLab.setStudent(currentStudent);
+        newSubmission.setStudentRepo(newLab);
         newLab.getSubmissions().put(newSubmission.getSubmissionTag(), newSubmission);
         currentStudent.getCurrentLabs().put(labFormat.repoNamingSchema, newLab);
         studentRepository.save(currentStudent);
