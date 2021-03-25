@@ -28,11 +28,11 @@ public class StudentRepo {
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "studentRepo")
     @MapKey(name="submissionTag")
     @JsonManagedReference
-    Map<String, StudentRepoSubmission> submissions;
+    Map<String, Submission> submissions;
 
     public StudentRepo() {
         super();
-        this.submissions = new HashMap<String, StudentRepoSubmission>();
+        this.submissions = new HashMap<String, Submission>();
     }
 
     public StudentRepo(LabFormat labFormat, String userName) {

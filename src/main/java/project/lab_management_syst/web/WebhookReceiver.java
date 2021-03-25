@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RestController;
 import project.lab_management_syst.persistence.model.LabFormat;
 import project.lab_management_syst.persistence.model.StudentRepo;
 import project.lab_management_syst.persistence.model.Student;
-import project.lab_management_syst.persistence.model.StudentRepoSubmission;
+import project.lab_management_syst.persistence.model.Submission;
 import project.lab_management_syst.persistence.repo.LabFormatRepository;
 import project.lab_management_syst.persistence.repo.StudentRepository;
 
@@ -66,7 +66,7 @@ public class WebhookReceiver {
         String commitId = (String) eventInfo.get("checkout_sha");
         logger.info("Commit Id: " + commitId);
 
-        StudentRepoSubmission newSubmission = new StudentRepoSubmission(commitId, tag, timeStamp);
+        Submission newSubmission = new Submission(commitId, tag, timeStamp);
         newSubmission.setLate(isLate);
 
         StudentRepo newLab = currentStudent.getCurrentLabs().get(repoName);

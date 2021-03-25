@@ -5,9 +5,7 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
-import project.lab_management_syst.persistence.model.Student;
 import project.lab_management_syst.persistence.model.StudentRepo;
-import project.lab_management_syst.persistence.model.StudentRepoSubmission;
 import project.lab_management_syst.persistence.repo.StudentRepository;
 
 import java.util.*;

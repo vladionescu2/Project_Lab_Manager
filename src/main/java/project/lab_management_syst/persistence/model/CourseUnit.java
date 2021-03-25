@@ -15,8 +15,7 @@ public class CourseUnit {
     @Entity
     @Data
     @EqualsAndHashCode
-    static
-    class LabTimes {
+    public static class LabTimes {
         @Id
         @GeneratedValue
         private Long id;

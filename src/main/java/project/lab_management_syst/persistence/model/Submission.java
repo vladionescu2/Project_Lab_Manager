@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 @Entity
 @Data
 @EqualsAndHashCode
-public class StudentRepoSubmission {
+public class Submission {
     @Id
     String commitId;
     String submissionTag;
@@ -26,11 +26,11 @@ public class StudentRepoSubmission {
     @JsonBackReference
     StudentRepo studentRepo;
 
-    public StudentRepoSubmission() {
+    public Submission() {
         super();
     }
 
-    public StudentRepoSubmission(String commitId, String submissionTag, LocalDateTime timeStamp) {
+    public Submission(String commitId, String submissionTag, LocalDateTime timeStamp) {
         this.timeStamp = timeStamp;
         this.commitId = commitId;
         this.submissionTag = submissionTag;
