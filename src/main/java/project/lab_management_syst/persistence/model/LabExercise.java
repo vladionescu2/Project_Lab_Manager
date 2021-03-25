@@ -1,11 +1,10 @@
 package project.lab_management_syst.persistence.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
+import javax.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
@@ -15,6 +14,11 @@ public class LabExercise {
     @Id
     @GeneratedValue
     private long exerciseId;
+
+    @ManyToOne
+    @JoinColumn
+    @JsonIgnore
+    private LabFormat labFormat;
 
     private String exerciseName;
     private LocalDateTime deadline;

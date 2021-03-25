@@ -17,6 +17,7 @@ public class LabFormat {
     @ManyToOne
     public CourseUnit courseUnit;
 
-    @ElementCollection
-    public Map<String, LocalDateTime> labExercises;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "labFormat")
+    @MapKey(name = "exerciseName")
+    public Map<String, LabExercise> labExercises;
 }

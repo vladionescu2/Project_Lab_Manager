@@ -5,10 +5,7 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-import project.lab_management_syst.persistence.model.LabFormat;
-import project.lab_management_syst.persistence.model.StudentRepo;
-import project.lab_management_syst.persistence.model.Student;
-import project.lab_management_syst.persistence.model.Submission;
+import project.lab_management_syst.persistence.model.*;
 import project.lab_management_syst.persistence.repo.LabFormatRepository;
 import project.lab_management_syst.persistence.repo.StudentRepository;
 
@@ -50,7 +47,8 @@ public class WebhookReceiver {
 
         String tag = ((String) eventInfo.get("ref")).replaceAll(".*/(.+)$", "$1");
         logger.info("Tag used: " + tag);
-        LocalDateTime submissionDeadline = labFormat.labExercises.get(tag);
+        LabExercise labExercise = labFormat.labExercises.get(tag);
+        LocalDateTime submissionDeadline = labExercise.getDeadline();
         if (submissionDeadline == null) {
             logger.info("The given tag is not used for a lab exercise");
             return "The given tag is not used for a lab exercise";
@@ -67,6 +65,7 @@ public class WebhookReceiver {
         logger.info("Commit Id: " + commitId);
 
         Submission newSubmission = new Submission(commitId, tag, timeStamp);
+        newSubmission.setLabExercise(labExercise);
         newSubmission.setLate(isLate);
 
         StudentRepo newLab = currentStudent.getCurrentLabs().get(repoName);
