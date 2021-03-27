@@ -13,13 +13,13 @@ import java.time.LocalDateTime;
 import java.util.Map;
 
 @RestController
-public class WebhookReceiver {
+public class WebhookListener {
     Logger logger = LogManager.getLogger();
 
     private StudentRepository studentRepository;
     private LabFormatRepository labFormatRepository;
 
-    public WebhookReceiver(StudentRepository studentRepository, LabFormatRepository labFormatRepository) {
+    public WebhookListener(StudentRepository studentRepository, LabFormatRepository labFormatRepository) {
         this.studentRepository = studentRepository;
         this.labFormatRepository = labFormatRepository;
     }
@@ -66,6 +66,7 @@ public class WebhookReceiver {
 
         Submission newSubmission = new Submission(commitId, tag, timeStamp);
         newSubmission.setLabExercise(labExercise);
+        newSubmission.setStudent(currentStudent);
         newSubmission.setLate(isLate);
 
         StudentRepo newLab = currentStudent.getCurrentLabs().get(repoName);

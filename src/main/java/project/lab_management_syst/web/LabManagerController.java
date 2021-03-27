@@ -7,6 +7,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 import project.lab_management_syst.persistence.model.StudentRepo;
 import project.lab_management_syst.persistence.repo.StudentRepository;
+import project.lab_management_syst.web.queue.QueueManager;
+import project.lab_management_syst.web.queue.QueuePositions;
 
 import java.util.*;
 
@@ -16,8 +18,10 @@ public class LabManagerController {
     Logger logger = LogManager.getLogger();
 
     private StudentRepository studentRepository;
+    private QueueManager queueManager;
 
-    public LabManagerController(StudentRepository studentRepository) {
+    public LabManagerController(StudentRepository studentRepository, QueueManager queueManager) {
+        this.queueManager = queueManager;
         this.studentRepository = studentRepository;
     }
 
@@ -34,29 +38,17 @@ public class LabManagerController {
     }
 
     @GetMapping("/marking/{username}")
-    public QueuePositions getMarkingRequests(@PathVariable String username) {
+    public QueuePositions getMarkingRequests(@PathVariable String username, @RequestParam List<Long> exerciseIds) {
         logger.info("Request to retrieve marking requests for " + username);
 
-        QueuePositions queuePositions = new QueuePositions();
-        queuePositions.positions = new HashMap<String, Integer>();
-
-        queuePositions.positions.put("commit1", 1);
-
-        return queuePositions;
+        return queueManager.handleGetPendingRequests(exerciseIds, username);
     }
 
     @PostMapping(value = "/marking/{username}", consumes = "application/json")
-    public QueuePositions requestMarking(@PathVariable String username, @RequestBody CommitsForMarking receivedCommits) {
+    public QueuePositions requestMarking(@PathVariable String username, @RequestBody ExercisesForMarking exercises) {
         logger.info("Request for marking from " + username);
 
-        QueuePositions queuePositions = new QueuePositions();
-        queuePositions.positions = new HashMap<String, Integer>();
-
-        for (String commitId : receivedCommits.commitIds) {
-            queuePositions.positions.put(commitId, 1);
-        }
-
-        return queuePositions;
+        return queueManager.handleNewMarkingRequests(exercises.exerciseIds, username);
     }
 
     @DeleteMapping("/marking/{username}")
@@ -65,11 +57,8 @@ public class LabManagerController {
         return "OK";
     }
 
-    public static class CommitsForMarking {
-        public List<String> commitIds;
+    public static class ExercisesForMarking {
+        public List<Long> exerciseIds;
     }
 
-    public static class QueuePositions {
-        public Map<String, Integer> positions;
-    }
 }

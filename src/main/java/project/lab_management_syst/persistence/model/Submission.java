@@ -21,6 +21,9 @@ public class Submission {
     @OneToOne
     LabExercise labExercise;
 
+    @OneToOne
+    Student student;
+
     @ManyToOne
     @JoinColumn()
     @JsonBackReference
