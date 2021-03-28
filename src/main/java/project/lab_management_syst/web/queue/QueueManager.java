@@ -50,12 +50,19 @@ public class QueueManager {
             LabQueue labQueue = this.hasLabQueue(exerciseId) ?
                     this.getLabQueue(exerciseId) : createNewLabQueue(exerciseId);
 
-            Submission submission = this.submissionRepository.findByStudentUserName(userName);
-            if (submission == null) {
-                throw new IllegalArgumentException("Student has no submission for the given exercise");
+            int queuePos;
+            if (labQueue.hasMarkingRequest(userName)) {
+                queuePos = labQueue.getMarkingPosition(userName);
+            }
+            else {
+                Submission submission = this.submissionRepository.findByLabExerciseExerciseIdAndStudentUserName
+                        (exerciseId, userName);
+                if (submission == null) {
+                    throw new IllegalArgumentException("Student has no submission for the given exercise");
+                }
+                queuePos = labQueue.addMarkingRequest(submission);
             }
 
-            int queuePos = labQueue.addMarkingRequest(submission);
             queuePositions.positions.put(exerciseId, queuePos);
         }
 

@@ -1,9 +1,6 @@
 package project.lab_management_syst.web.queue;
 
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.NoSuchElementException;
+import java.util.*;
 
 /**
  *  The {@code IndexMinPQ} class represents an indexed priority queue of generic keys.
@@ -34,25 +31,29 @@ import java.util.NoSuchElementException;
  *
  */
 public class CustomPriorityQueue implements Iterable<LabQueue.MarkingRequest> {
-    private int n;           // number of elements on PQ
-    private final LabQueue.MarkingRequest[] pq;        // binary heap using 1-based indexing
+    private final ArrayList<LabQueue.MarkingRequest> pq;        // binary heap using 1-based indexing
     private final Map<LabQueue.MarkingRequest, Integer> qp;        // inverse of pq - qp[pq[i]] = pq[qp[i]] = i
     private final Map<String, LabQueue.MarkingRequest> students;
 
     /**
      * Initializes an empty indexed priority queue with indices between {@code 0}
-     * and {@code maxN - 1}.
+     * and {@code initCapacity - 1}.
      *
-     * @param maxN the keys on this priority queue are index from {@code 0}
-     *             {@code maxN - 1}
-     * @throws IllegalArgumentException if {@code maxN < 0}
+     * @param initCapacity the keys on this priority queue are index from {@code 0}
+     *             {@code initCapacity - 1}
+     * @throws IllegalArgumentException if {@code initCapacity < 0}
      */
-    public CustomPriorityQueue(int maxN) {
-        if (maxN < 0) throw new IllegalArgumentException();
-        n = 0;
-        pq = new LabQueue.MarkingRequest[maxN + 1];
-        qp = new HashMap<>();                   // make this of length maxN??
-        students = new HashMap<>();
+    public CustomPriorityQueue(int initCapacity) {
+        if (initCapacity < 0) throw new IllegalArgumentException();
+//        pq = new LabQueue.MarkingRequest[initCapacity + 1];
+        pq = new ArrayList<>(initCapacity + 1);
+        qp = new HashMap<>(initCapacity + 1);                   // make this of length initCapacity??
+        students = new HashMap<>(initCapacity + 1);
+        pq.add(null);
+    }
+
+    public CustomPriorityQueue() {
+        this(50);
     }
 
     /**
@@ -62,13 +63,21 @@ public class CustomPriorityQueue implements Iterable<LabQueue.MarkingRequest> {
      * {@code false} otherwise
      */
     public boolean isEmpty() {
-        return n == 0;
+        return pq.size() == 0;
     }
 
     public Integer getPosition(String userName) {
         LabQueue.MarkingRequest request = students.get(userName);
 
         return request == null ? null : qp.get(request);
+    }
+
+    public LabQueue.MarkingRequest getMarkingRequest(String userName) {
+        return students.get(userName);
+    }
+
+    public boolean hasMarkingRequest(String userName) {
+        return students.containsKey(userName);
     }
 
     /**
@@ -89,7 +98,7 @@ public class CustomPriorityQueue implements Iterable<LabQueue.MarkingRequest> {
      * @return the number of keys on this priority queue
      */
     public int size() {
-        return n;
+        return pq.size() - 1;
     }
 
     /**
@@ -102,12 +111,13 @@ public class CustomPriorityQueue implements Iterable<LabQueue.MarkingRequest> {
      */
     public int insert(LabQueue.MarkingRequest i) {
         if (contains(i)) throw new IllegalArgumentException("index is already in the priority queue");
-        n++;
+        pq.add(i);
+        qp.put(i, this.size());
         students.put(i.getSubmission().getStudent().getUserName(), i);
-        qp.put(i, n);
-        pq[n] = i;
-        swim(n);
+        swim(this.size());
 
+        //FOR TESTING
+        assert isMaxHeap();
         return qp.get(i);
     }
 
@@ -117,9 +127,9 @@ public class CustomPriorityQueue implements Iterable<LabQueue.MarkingRequest> {
      * @return an index associated with a minimum key
      * @throws NoSuchElementException if this priority queue is empty
      */
-    public LabQueue.MarkingRequest minIndex() {
-        if (n == 0) throw new NoSuchElementException("Priority queue underflow");
-        return pq[1];
+    public LabQueue.MarkingRequest maxIndex() {
+        if (this.size() == 0) throw new NoSuchElementException("Priority queue underflow");
+        return pq.get(1);
     }
 
     /**
@@ -128,15 +138,18 @@ public class CustomPriorityQueue implements Iterable<LabQueue.MarkingRequest> {
      * @return an index associated with a minimum key
      * @throws NoSuchElementException if this priority queue is empty
      */
-    public LabQueue.MarkingRequest delMin() {
-        if (n == 0) throw new NoSuchElementException("Priority queue underflow");
-        LabQueue.MarkingRequest min = pq[1];
-        exch(1, n--);
+    public LabQueue.MarkingRequest delMax() {
+        if (this.size() == 0) throw new NoSuchElementException("Priority queue underflow");
+        LabQueue.MarkingRequest max = pq.get(1);
+        exch(1, this.size());
         sink(1);
-        assert min == pq[n + 1];
-        qp.remove(min);
-        pq[n + 1] = null;        // not needed
-        return min;
+        assert max == pq.get(this.size());
+        qp.remove(max);
+        pq.remove(this.size());
+
+        //FOR TESTING
+        assert (isMaxHeap());
+        return max;
     }
 
     /**
@@ -149,25 +162,43 @@ public class CustomPriorityQueue implements Iterable<LabQueue.MarkingRequest> {
     public void delete(LabQueue.MarkingRequest i) {
         if (!contains(i)) throw new NoSuchElementException("index is not in the priority queue");
         int index = qp.get(i);
-        exch(index, n--);
+        exch(index, this.size());
+        pq.remove(this.size());
         swim(index);
         sink(index);
         qp.remove(i);
+
+        //FOR TESTING
+        assert isMaxHeap();
     }
 
     /***************************************************************************
      * General helper functions.
      ***************************************************************************/
-    private boolean greater(int i, int j) {
-        return pq[i].compareTo(pq[j]) > 0;
+    private boolean less(int i, int j) {
+        return pq.get(i).compareTo(pq.get(j)) < 0;
     }
 
     private void exch(int i, int j) {
-        LabQueue.MarkingRequest swap = pq[i];
-        pq[i] = pq[j];
-        pq[j] = swap;
-        qp.put(pq[i], i);
-        qp.put(pq[j], j);
+        LabQueue.MarkingRequest swap = pq.get(i);
+        pq.set(i, pq.get(j));
+        pq.set(j, swap);
+        qp.put(pq.get(i), i);
+        qp.put(pq.get(j), j);
+    }
+
+    private boolean isMaxHeap() {
+        return isMaxHeapOrdered(1);
+    }
+
+    private boolean isMaxHeapOrdered(int k) {
+        if (k > this.size())
+            return true;
+        int left = 2 * k;
+        int right = 2 * k + 1;
+        if (left <= this.size() && less(k, left)) return false;
+        if (right <= this.size() && less(k, right)) return false;
+        return isMaxHeapOrdered(left) && isMaxHeapOrdered(right);
     }
 
 
@@ -175,17 +206,17 @@ public class CustomPriorityQueue implements Iterable<LabQueue.MarkingRequest> {
      * Heap helper functions.
      ***************************************************************************/
     private void swim(int k) {
-        while (k > 1 && greater(k / 2, k)) {
+        while (k > 1 && less(k / 2, k)) {
             exch(k, k / 2);
             k = k / 2;
         }
     }
 
     private void sink(int k) {
-        while (2 * k <= n) {
+        while (2 * k <= this.size()) {
             int j = 2 * k;
-            if (j < n && greater(j, j + 1)) j++;
-            if (!greater(k, j)) break;
+            if (j < this.size() && less(j, j + 1)) j++;
+            if (!less(k, j)) break;
             exch(k, j);
             k = j;
         }
@@ -214,9 +245,9 @@ public class CustomPriorityQueue implements Iterable<LabQueue.MarkingRequest> {
         // add all elements to copy of heap
         // takes linear time since already in heap order so no keys move
         public HeapIterator() {
-            copy = new CustomPriorityQueue(pq.length - 1);
-            for (int i = 1; i <= n; i++)
-                copy.insert(pq[i]);
+            copy = new CustomPriorityQueue(pq.size());
+            for (int i = 1; i <= copy.size(); i++)
+                copy.insert(pq.get(i));
         }
 
         public boolean hasNext() {
@@ -229,7 +260,7 @@ public class CustomPriorityQueue implements Iterable<LabQueue.MarkingRequest> {
 
         public LabQueue.MarkingRequest next() {
             if (!hasNext()) throw new NoSuchElementException();
-            return copy.delMin();
+            return copy.delMax();
         }
     }
 }

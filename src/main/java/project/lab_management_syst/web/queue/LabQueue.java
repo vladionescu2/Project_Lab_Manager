@@ -1,6 +1,7 @@
 package project.lab_management_syst.web.queue;
 
 import lombok.Getter;
+import lombok.Setter;
 import project.lab_management_syst.persistence.model.CourseUnit;
 import project.lab_management_syst.persistence.model.LabExercise;
 import project.lab_management_syst.persistence.model.Submission;
@@ -26,17 +27,34 @@ class LabQueue {
     }
 
     public Integer getMarkingPosition(String userName) {
+
         return this.labQueueComponent.getPosition(userName);
+    }
+
+    public boolean hasMarkingRequest(String userName) {
+        return this.labQueueComponent.hasMarkingRequest(userName);
+    }
+
+    public MarkingRequest getMarkingRequest(String userName) {
+        return this.labQueueComponent.getMarkingRequest(userName);
     }
 
     protected class MarkingRequest implements Comparable<MarkingRequest> {
         @Getter
         private final Submission submission;
+        @Getter
+        @Setter
+        private int seatNr;
         public final int score;
 
         public MarkingRequest(Submission submission) {
             this.submission = submission;
             this.score = this.determineRequestScore();
+        }
+
+        public MarkingRequest(Submission submission, int seatNr) {
+            this(submission);
+            this.seatNr = seatNr;
         }
 
         private int determineRequestScore() {
@@ -62,7 +80,7 @@ class LabQueue {
         @Override
         public int compareTo(MarkingRequest otherRequest) {
             if (this.score != otherRequest.score) {
-                return - this.score + otherRequest.score;
+                return this.score - otherRequest.score;
             }
             if (!this.submission.equals(otherRequest.submission)) {
                 return this.submission.getStudent().getUserName().compareTo(

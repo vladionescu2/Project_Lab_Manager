@@ -22,6 +22,7 @@ public class Submission {
     LabExercise labExercise;
 
     @OneToOne
+    @JsonBackReference
     Student student;
 
     @ManyToOne

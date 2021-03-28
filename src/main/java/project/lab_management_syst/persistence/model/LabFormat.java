@@ -1,5 +1,6 @@
 package project.lab_management_syst.persistence.model;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -19,5 +20,6 @@ public class LabFormat {
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "labFormat")
     @MapKey(name = "exerciseName")
+    @JsonManagedReference
     public Map<String, LabExercise> labExercises;
 }

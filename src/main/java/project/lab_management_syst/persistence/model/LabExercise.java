@@ -1,6 +1,6 @@
 package project.lab_management_syst.persistence.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -17,7 +17,7 @@ public class LabExercise {
 
     @ManyToOne
     @JoinColumn
-    @JsonIgnore
+    @JsonBackReference
     private LabFormat labFormat;
 
     private String exerciseName;
