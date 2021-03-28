@@ -1,5 +1,8 @@
 package project.lab_management_syst.web.queue;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import java.util.*;
 
 /**
@@ -35,6 +38,8 @@ public class CustomPriorityQueue implements Iterable<LabQueue.MarkingRequest> {
     private final Map<LabQueue.MarkingRequest, Integer> qp;        // inverse of pq - qp[pq[i]] = pq[qp[i]] = i
     private final Map<String, LabQueue.MarkingRequest> students;
 
+    Logger logger = LogManager.getLogger();
+
     /**
      * Initializes an empty indexed priority queue with indices between {@code 0}
      * and {@code initCapacity - 1}.
@@ -67,17 +72,31 @@ public class CustomPriorityQueue implements Iterable<LabQueue.MarkingRequest> {
     }
 
     public Integer getPosition(String userName) {
+        logger.info("Current heap: " + pq);
+        logger.info("Current qp: " + qp);
+
         LabQueue.MarkingRequest request = students.get(userName);
 
         return request == null ? null : qp.get(request);
     }
 
     public LabQueue.MarkingRequest getMarkingRequest(String userName) {
+        logger.info("Current heap: " + pq);
+        logger.info("Current qp: " + qp);
         return students.get(userName);
     }
 
     public boolean hasMarkingRequest(String userName) {
         return students.containsKey(userName);
+    }
+
+    public void deleteRequest(String userName) {
+        LabQueue.MarkingRequest request = students.get(userName);
+
+        if (request != null) {
+            this.delete(request);
+            this.students.remove(userName);
+        }
     }
 
     /**
@@ -110,6 +129,10 @@ public class CustomPriorityQueue implements Iterable<LabQueue.MarkingRequest> {
      *                                  with index {@code i}
      */
     public int insert(LabQueue.MarkingRequest i) {
+        logger.info("Inserting request " + i);
+        logger.info("Heap before insertion: " + pq);
+        logger.info("qp before insertion " + qp);
+
         if (contains(i)) throw new IllegalArgumentException("index is already in the priority queue");
         pq.add(i);
         qp.put(i, this.size());
@@ -118,6 +141,9 @@ public class CustomPriorityQueue implements Iterable<LabQueue.MarkingRequest> {
 
         //FOR TESTING
         assert isMaxHeap();
+
+        logger.info("qp after insesrtion " + qp);
+        logger.info("Heap after insertion: " + pq);
         return qp.get(i);
     }
 
@@ -160,14 +186,25 @@ public class CustomPriorityQueue implements Iterable<LabQueue.MarkingRequest> {
      * @throws NoSuchElementException   no key is associated with index {@code i}
      */
     public void delete(LabQueue.MarkingRequest i) {
+        logger.info("Deleting request " + i);
+        logger.info("Heap before deletion: " + pq);
+        logger.info("qp before deletion: " + qp);
+
         if (!contains(i)) throw new NoSuchElementException("index is not in the priority queue");
         int index = qp.get(i);
+        if (index == this.size()) {
+            qp.remove(i);
+            pq.remove(index);
+            return;
+        }
         exch(index, this.size());
         pq.remove(this.size());
         swim(index);
         sink(index);
         qp.remove(i);
 
+        logger.info("qp after deletion: " + qp);
+        logger.info("Heap after deletion: " + pq);
         //FOR TESTING
         assert isMaxHeap();
     }

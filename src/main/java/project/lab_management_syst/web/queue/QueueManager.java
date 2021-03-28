@@ -1,12 +1,16 @@
 package project.lab_management_syst.web.queue;
 
 import lombok.Getter;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Component;
 import project.lab_management_syst.persistence.model.CourseUnit;
 import project.lab_management_syst.persistence.model.LabExercise;
 import project.lab_management_syst.persistence.model.Submission;
 import project.lab_management_syst.persistence.repo.LabExerciseRepository;
 import project.lab_management_syst.persistence.repo.SubmissionRepository;
+import project.lab_management_syst.web.model.GetMarkingRequest;
+import project.lab_management_syst.web.model.QueuePositions;
 
 import java.time.LocalDateTime;
 import java.util.HashMap;
@@ -21,6 +25,9 @@ public class QueueManager {
     private final LabExerciseRepository labExerciseRepository;
     private final SubmissionRepository submissionRepository;
 
+    Logger logger = LogManager.getLogger();
+
+
     public QueueManager(LabExerciseRepository labExerciseRepository,
                         SubmissionRepository submissionRepository) {
         this.labExerciseRepository = labExerciseRepository;
@@ -30,6 +37,7 @@ public class QueueManager {
 
     public QueuePositions handleGetPendingRequests(List<Long> exerciseIds, String userName) {
         QueuePositions queuePositions = new QueuePositions();
+        queuePositions.seatNr = null;
         for (Long exerciseId: exerciseIds) {
             if (this.hasLabQueue(exerciseId)) {
                 LabQueue labQueue = this.getLabQueue(exerciseId);
@@ -37,6 +45,7 @@ public class QueueManager {
 
                 if (queuePos != null) {
                     queuePositions.positions.put(exerciseId, queuePos);
+                    queuePositions.seatNr = labQueue.getSeatNr(userName);
                 }
             }
         }
@@ -44,9 +53,18 @@ public class QueueManager {
         return queuePositions;
     }
 
-    public QueuePositions handleNewMarkingRequests(List<Long> exerciseIds, String userName) {
+    public QueuePositions handleNewMarkingRequests(GetMarkingRequest request, String userName) {
+        for (Long exerciseId: request.toCancel) {
+            if (!this.hasLabQueue(exerciseId)) {
+                continue;
+            }
+
+            LabQueue labQueue = this.getLabQueue(exerciseId);
+            labQueue.removeMarkingRequest(userName);
+        }
+
         QueuePositions queuePositions = new QueuePositions();
-        for (Long exerciseId: exerciseIds) {
+        for (Long exerciseId: request.toMark) {
             LabQueue labQueue = this.hasLabQueue(exerciseId) ?
                     this.getLabQueue(exerciseId) : createNewLabQueue(exerciseId);
 
@@ -60,7 +78,7 @@ public class QueueManager {
                 if (submission == null) {
                     throw new IllegalArgumentException("Student has no submission for the given exercise");
                 }
-                queuePos = labQueue.addMarkingRequest(submission);
+                queuePos = labQueue.addMarkingRequest(submission, request.seatNr);
             }
 
             queuePositions.positions.put(exerciseId, queuePos);
@@ -92,6 +110,7 @@ public class QueueManager {
         LocalDateTime now = LocalDateTime.now();
         for (CourseUnit.LabTimes labTime: labTimes) {
             if (now.isBefore(labTime.getEnd())) {
+                logger.info("Found upcoming lab session on " + labTime.getEnd());
                 return labTime;
             }
         }

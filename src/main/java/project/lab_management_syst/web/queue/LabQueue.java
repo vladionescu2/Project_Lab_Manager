@@ -2,6 +2,7 @@ package project.lab_management_syst.web.queue;
 
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 import project.lab_management_syst.persistence.model.CourseUnit;
 import project.lab_management_syst.persistence.model.LabExercise;
 import project.lab_management_syst.persistence.model.Submission;
@@ -22,13 +23,16 @@ class LabQueue {
         this.labExercise = labExercise;
     }
 
-    public int addMarkingRequest(Submission submission) {
-        return this.labQueueComponent.insert(new MarkingRequest(submission));
+    public int addMarkingRequest(Submission submission, int seatNr) {
+        return this.labQueueComponent.insert(new MarkingRequest(submission, seatNr));
     }
 
     public Integer getMarkingPosition(String userName) {
-
         return this.labQueueComponent.getPosition(userName);
+    }
+
+    public Integer getSeatNr(String userName) {
+        return this.labQueueComponent.getMarkingRequest(userName).getSeatNr();
     }
 
     public boolean hasMarkingRequest(String userName) {
@@ -37,6 +41,10 @@ class LabQueue {
 
     public MarkingRequest getMarkingRequest(String userName) {
         return this.labQueueComponent.getMarkingRequest(userName);
+    }
+
+    public void removeMarkingRequest(String userName) {
+        this.labQueueComponent.deleteRequest(userName);
     }
 
     protected class MarkingRequest implements Comparable<MarkingRequest> {
@@ -88,6 +96,13 @@ class LabQueue {
             }
 
             return 0;
+        }
+
+        @Override
+        public String toString() {
+            return "Submission: { labExercise: " + submission.getSubmissionTag() +
+                    ", student: " + submission.getStudent().getUserName() + " }\n" +
+                    "seatNr: " + this.seatNr + ",\nscore: " + this.score;
         }
     }
 }

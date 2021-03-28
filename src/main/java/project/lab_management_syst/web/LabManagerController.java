@@ -7,8 +7,9 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 import project.lab_management_syst.persistence.model.StudentRepo;
 import project.lab_management_syst.persistence.repo.StudentRepository;
+import project.lab_management_syst.web.model.GetMarkingRequest;
 import project.lab_management_syst.web.queue.QueueManager;
-import project.lab_management_syst.web.queue.QueuePositions;
+import project.lab_management_syst.web.model.QueuePositions;
 
 import java.util.*;
 
@@ -45,20 +46,16 @@ public class LabManagerController {
     }
 
     @PostMapping(value = "/marking/{username}", consumes = "application/json")
-    public QueuePositions requestMarking(@PathVariable String username, @RequestBody ExercisesForMarking exercises) {
+    public QueuePositions requestMarking(@PathVariable String username, @RequestBody GetMarkingRequest request) {
         logger.info("Request for marking from " + username);
 
-        return queueManager.handleNewMarkingRequests(exercises.exerciseIds, username);
+        return queueManager.handleNewMarkingRequests(request, username);
     }
 
     @DeleteMapping("/marking/{username}")
     public String deleteMarking(@PathVariable String username) {
         logger.info("Request to delete marking from " + username);
         return "OK";
-    }
-
-    public static class ExercisesForMarking {
-        public List<Long> exerciseIds;
     }
 
 }
