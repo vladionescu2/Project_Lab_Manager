@@ -2,6 +2,7 @@ package project.lab_management_syst.web.queue;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import project.lab_management_syst.web.model.QueuePositions;
 
 import java.util.*;
 
@@ -70,6 +71,14 @@ public class CustomPriorityQueue implements Iterable<LabQueue.MarkingRequest> {
     public boolean isEmpty() {
         return pq.size() == 0;
     }
+
+//    public QueuePositions[] getAllPositionsLessThan(int position) {
+//        QueuePositions[] queuePositions = new QueuePositions[this.size() - position];
+//        for (int i = position; i <= this.size(); i++) {
+//            QueuePositions studentPos = new QueuePositions();
+//
+//        }
+//    }
 
     public Integer getPosition(String userName) {
         logger.info("Current heap: " + pq);

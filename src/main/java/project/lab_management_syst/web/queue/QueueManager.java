@@ -11,6 +11,7 @@ import project.lab_management_syst.persistence.repo.LabExerciseRepository;
 import project.lab_management_syst.persistence.repo.SubmissionRepository;
 import project.lab_management_syst.web.model.GetMarkingRequest;
 import project.lab_management_syst.web.model.QueuePositions;
+import reactor.core.publisher.Flux;
 
 import java.time.LocalDateTime;
 import java.util.HashMap;
@@ -24,6 +25,7 @@ public class QueueManager {
     private final Map<Long, LabQueue> labQueueMap;
     private final LabExerciseRepository labExerciseRepository;
     private final SubmissionRepository submissionRepository;
+    private final Map<String, QueuePositionListener> queuePositionsListeners;
 
     Logger logger = LogManager.getLogger();
 
@@ -33,6 +35,24 @@ public class QueueManager {
         this.labExerciseRepository = labExerciseRepository;
         this.submissionRepository = submissionRepository;
         this.labQueueMap = new HashMap<>();
+
+        this.queuePositionsListeners = new HashMap<>();
+    }
+
+    public Flux<QueuePositions> getStudentQueuePositionsStream(String userName) {
+            return Flux.create(sink -> {
+                queuePositionsListeners.put(userName, new QueuePositionListener() {
+                    @Override
+                    public void onQueueChange(QueuePositions newPosition) {
+                        sink.next(newPosition);
+                    }
+
+                    @Override
+                    public void complete() {
+                        sink.complete();
+                    }
+                });
+            });
     }
 
     public QueuePositions handleGetPendingRequests(List<Long> exerciseIds, String userName) {
@@ -79,12 +99,22 @@ public class QueueManager {
                     throw new IllegalArgumentException("Student has no submission for the given exercise");
                 }
                 queuePos = labQueue.addMarkingRequest(submission, request.seatNr);
+
+                streamNewPositions(exerciseId, labQueue);
             }
 
             queuePositions.positions.put(exerciseId, queuePos);
         }
 
         return queuePositions;
+    }
+
+    private void streamNewPositions(Long exerciseId, LabQueue labQueue) {
+        for (String student : queuePositionsListeners.keySet()) {
+            QueuePositions newPosition = new QueuePositions();
+            newPosition.positions.put(exerciseId, labQueue.getMarkingPosition(student));
+            queuePositionsListeners.get(student).onQueueChange(newPosition);
+        }
     }
 
     public void addLabQueue(Long labExerciseId, LabQueue labQueue) {
