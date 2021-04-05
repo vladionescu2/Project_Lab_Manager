@@ -71,3 +71,8 @@ INSERT INTO LAB_EXERCISE(EXERCISE_ID, DEADLINE, EXERCISE_NAME, LAB_FORMAT_REPO_N
     (6, DATEADD('ww', 4, DATEADD('hh', 12, DATEADD('dd', -((DAY_OF_WEEK(today) - 2) % 7) + 2, today))), 'ex_1', 'COMP2_Lab'),
     (7, DATEADD('ww', 5, DATEADD('hh', 12, DATEADD('dd', -((DAY_OF_WEEK(today) - 2) % 7) + 2, today))), 'ex_2', 'COMP2_Lab'),
     (8, DATEADD('ww', 6, DATEADD('hh', 12, DATEADD('dd', -((DAY_OF_WEEK(today) - 2) % 7) + 2, today))), 'ex_3', 'COMP2_Lab');
+
+INSERT INTO COURSE_UNIT_STAFF_MEMBERS(COURSE_UNIT_UNIT_CODE, STAFF_MEMBERS) VALUES
+    ('COMP0', 'staff1'), ('COMP0', 'staff2'),
+    ('COMP1', 'staff1'), ('COMP1', 'staff2'),
+    ('COMP2', 'staff1')

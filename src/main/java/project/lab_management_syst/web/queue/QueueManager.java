@@ -10,13 +10,13 @@ import project.lab_management_syst.persistence.model.Submission;
 import project.lab_management_syst.persistence.repo.LabExerciseRepository;
 import project.lab_management_syst.persistence.repo.SubmissionRepository;
 import project.lab_management_syst.web.model.GetMarkingRequest;
+import project.lab_management_syst.web.model.LabQueueSnapshot;
 import project.lab_management_syst.web.model.QueuePositions;
 import reactor.core.publisher.Flux;
 
 import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 
 @Component
@@ -26,6 +26,7 @@ public class QueueManager {
     private final LabExerciseRepository labExerciseRepository;
     private final SubmissionRepository submissionRepository;
     private final Map<String, QueuePositionListener> queuePositionsListeners;
+    private final Map<Long, LabQueueListener> labQueueListeners;
 
     Logger logger = LogManager.getLogger();
 
@@ -37,9 +38,11 @@ public class QueueManager {
         this.labQueueMap = new HashMap<>();
 
         this.queuePositionsListeners = new HashMap<>();
+        this.labQueueListeners = new HashMap<>();
     }
 
     public Flux<QueuePositions> getStudentQueuePositionsStream(String userName) {
+        logger.info("Creating new stream for " + userName);
             return Flux.create(sink -> {
                 queuePositionsListeners.put(userName, new QueuePositionListener() {
                     @Override
@@ -53,6 +56,18 @@ public class QueueManager {
                     }
                 });
             });
+    }
+
+    public Flux<LabQueueSnapshot> getLabQueueStream(Long exerciseId) {
+        if (!labQueueListeners.containsKey(exerciseId)) {
+            logger.info("Creating new stream for exercise id " + exerciseId);
+            Flux<LabQueueSnapshot> labQueueFlux = Flux.create(sink -> {
+                labQueueListeners.put(exerciseId, new LabQueueListener(sink));
+            });
+            labQueueListeners.get(exerciseId).flux = labQueueFlux;
+        }
+
+        return labQueueListeners.get(exerciseId).flux;
     }
 
     public QueuePositions handleGetPendingRequests(List<Long> exerciseIds, String userName) {
@@ -99,18 +114,48 @@ public class QueueManager {
                     throw new IllegalArgumentException("Student has no submission for the given exercise");
                 }
                 queuePos = labQueue.addMarkingRequest(submission, request.seatNr);
-
-                streamNewPositions(exerciseId, labQueue);
             }
 
             queuePositions.positions.put(exerciseId, queuePos);
         }
 
+        Set<Long> modifiedQueues = new HashSet<>();
+        modifiedQueues.addAll(request.toMark);
+        modifiedQueues.addAll(request.toCancel);
+
+        logger.info("Modified queues are " + modifiedQueues);
+        for (Long exercise : modifiedQueues) {
+            streamNewPositions(exercise);
+        }
+
         return queuePositions;
     }
 
-    private void streamNewPositions(Long exerciseId, LabQueue labQueue) {
+    public List<LabQueueSnapshot.StudentRequest> getAllStudentRequests(Long exerciseId) {
+        LabQueue labQueue = this.hasLabQueue(exerciseId) ?
+                this.getLabQueue(exerciseId) : createNewLabQueue(exerciseId);
+
+        List<LabQueueSnapshot.StudentRequest> studentRequests = labQueue.getAllMarkingRequests().stream()
+                .map(markingRequest -> new LabQueueSnapshot.StudentRequest(
+                        markingRequest.getSubmission().getStudent().getUserName(),
+                        markingRequest.getSeatNr()))
+                .collect(Collectors.toList());
+
+        return studentRequests;
+    }
+
+    private void streamNewPositions(Long exerciseId) {
+        LabQueue labQueue = this.getLabQueue(exerciseId);
+
+        logger.info("Sending new queue positions for ex id " + exerciseId);
+//        if (labQueueListeners.containsKey(exerciseId)) {
+//            List<LabQueueSnapshot.StudentRequest> studentRequests = this.getAllStudentRequests(exerciseId);
+//            labQueueListeners.get(exerciseId).onQueueChange(new LabQueueSnapshot(studentRequests));
+//        }
+
         for (String student : queuePositionsListeners.keySet()) {
+            if (!labQueue.hasMarkingRequest(student)) { continue; }
+            logger.info("Sending new queue position for " + student);
             QueuePositions newPosition = new QueuePositions();
             newPosition.positions.put(exerciseId, labQueue.getMarkingPosition(student));
             queuePositionsListeners.get(student).onQueueChange(newPosition);
@@ -156,7 +201,5 @@ public class QueueManager {
         return this.labQueueMap.containsKey(labExerciseId);
     }
 
-    public void removeLabQueue(Long labExerciseId) {
-        this.labQueueMap.remove(labExerciseId);
-    }
+    public void removeLabQueue(Long labExerciseId) { this.labQueueMap.remove(labExerciseId); }
 }

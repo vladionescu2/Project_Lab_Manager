@@ -6,6 +6,7 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.codec.ServerSentEvent;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
@@ -45,53 +46,12 @@ public class LabManagerController {
         }
     }
 
-    @GetMapping(value = "/data/flux", produces = MediaType.APPLICATION_STREAM_JSON_VALUE)
-    public Flux<Object> streamDataFlux() {
-        return Flux.interval(Duration.ofSeconds(1)).map(i -> "Data stream line - " + i );
-    }
-
-    @GetMapping(value = "/queue-pos/{username}", produces = MediaType.APPLICATION_STREAM_JSON_VALUE)
-    public Flux<QueuePositions> streamQueuePosition(@PathVariable String username) {
-        return this.queueManager.getStudentQueuePositionsStream(username);
-    }
-
-    @GetMapping(value="/data")
-    public ResponseEntity<StreamingResponseBody> streamData() {
-        StreamingResponseBody responseBody = response -> {
-            for (int i = 1; i <= 1000; i++) {
-                try {
-                    Thread.sleep(10);
-                    response.write(("Data stream line - " + i + "\n").getBytes());
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
-        };
-        return ResponseEntity.ok()
-                .contentType(MediaType.TEXT_PLAIN)
-                .body(responseBody);
-    }
-
-    @GetMapping("/json")
-    public ResponseEntity<StreamingResponseBody> streamJson() {
-        int maxRecords = 1000;
-        StreamingResponseBody responseBody = response -> {
-            for (int i = 1; i <= maxRecords; i++) {
-                Student st = new Student("Name");
-                ObjectMapper mapper = new ObjectMapper();
-                String jsonString = mapper.writeValueAsString(st) + "\n";
-                response.write(jsonString.getBytes());
-                response.flush();
-                try {
-                    Thread.sleep(1000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
-        };
-        return ResponseEntity.ok()
-                .contentType(MediaType.APPLICATION_STREAM_JSON)
-                .body(responseBody);
+    @GetMapping(value = "/queue-pos/{username}", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+    public Flux<ServerSentEvent<QueuePositions>> streamQueuePosition(@PathVariable String username) {
+        return this.queueManager.getStudentQueuePositionsStream(username).map(queuePositions -> ServerSentEvent.<QueuePositions>builder()
+                .event("new-pos")
+                .data(queuePositions)
+                .build());
     }
 
     @GetMapping("/marking/{username}")

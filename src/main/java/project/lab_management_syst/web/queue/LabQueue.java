@@ -9,6 +9,8 @@ import project.lab_management_syst.persistence.model.Submission;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 class LabQueue {
     @Getter
@@ -45,6 +47,15 @@ class LabQueue {
 
     public void removeMarkingRequest(String userName) {
         this.labQueueComponent.deleteRequest(userName);
+    }
+
+    public List<MarkingRequest> getAllMarkingRequests() {
+        List<MarkingRequest> markingRequests = new ArrayList<>();
+        for (MarkingRequest markingRequest : this.labQueueComponent) {
+            markingRequests.add(markingRequest);
+        }
+
+        return markingRequests;
     }
 
     protected class MarkingRequest implements Comparable<MarkingRequest> {

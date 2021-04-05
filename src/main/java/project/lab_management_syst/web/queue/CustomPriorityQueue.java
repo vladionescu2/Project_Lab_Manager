@@ -69,7 +69,7 @@ public class CustomPriorityQueue implements Iterable<LabQueue.MarkingRequest> {
      * {@code false} otherwise
      */
     public boolean isEmpty() {
-        return pq.size() == 0;
+        return size() == 0;
     }
 
 //    public QueuePositions[] getAllPositionsLessThan(int position) {
@@ -81,8 +81,8 @@ public class CustomPriorityQueue implements Iterable<LabQueue.MarkingRequest> {
 //    }
 
     public Integer getPosition(String userName) {
-        logger.info("Current heap: " + pq);
-        logger.info("Current qp: " + qp);
+//        logger.info("Current heap: " + pq);
+//        logger.info("Current qp: " + qp);
 
         LabQueue.MarkingRequest request = students.get(userName);
 
@@ -90,8 +90,8 @@ public class CustomPriorityQueue implements Iterable<LabQueue.MarkingRequest> {
     }
 
     public LabQueue.MarkingRequest getMarkingRequest(String userName) {
-        logger.info("Current heap: " + pq);
-        logger.info("Current qp: " + qp);
+//        logger.info("Current heap: " + pq);
+//        logger.info("Current qp: " + qp);
         return students.get(userName);
     }
 
@@ -138,9 +138,9 @@ public class CustomPriorityQueue implements Iterable<LabQueue.MarkingRequest> {
      *                                  with index {@code i}
      */
     public int insert(LabQueue.MarkingRequest i) {
-        logger.info("Inserting request " + i);
-        logger.info("Heap before insertion: " + pq);
-        logger.info("qp before insertion " + qp);
+//        logger.info("Inserting request " + i);
+//        logger.info("Heap before insertion: " + pq);
+//        logger.info("qp before insertion " + qp);
 
         if (contains(i)) throw new IllegalArgumentException("index is already in the priority queue");
         pq.add(i);
@@ -151,8 +151,8 @@ public class CustomPriorityQueue implements Iterable<LabQueue.MarkingRequest> {
         //FOR TESTING
         assert isMaxHeap();
 
-        logger.info("qp after insesrtion " + qp);
-        logger.info("Heap after insertion: " + pq);
+//        logger.info("qp after insesrtion " + qp);
+//        logger.info("Heap after insertion: " + pq);
         return qp.get(i);
     }
 
@@ -168,7 +168,7 @@ public class CustomPriorityQueue implements Iterable<LabQueue.MarkingRequest> {
     }
 
     /**
-     * Removes a minimum key and returns its associated index.
+     * Removes a maximum key and returns its associated index.
      *
      * @return an index associated with a minimum key
      * @throws NoSuchElementException if this priority queue is empty
@@ -195,9 +195,9 @@ public class CustomPriorityQueue implements Iterable<LabQueue.MarkingRequest> {
      * @throws NoSuchElementException   no key is associated with index {@code i}
      */
     public void delete(LabQueue.MarkingRequest i) {
-        logger.info("Deleting request " + i);
-        logger.info("Heap before deletion: " + pq);
-        logger.info("qp before deletion: " + qp);
+//        logger.info("Deleting request " + i);
+//        logger.info("Heap before deletion: " + pq);
+//        logger.info("qp before deletion: " + qp);
 
         if (!contains(i)) throw new NoSuchElementException("index is not in the priority queue");
         int index = qp.get(i);
@@ -212,8 +212,8 @@ public class CustomPriorityQueue implements Iterable<LabQueue.MarkingRequest> {
         sink(index);
         qp.remove(i);
 
-        logger.info("qp after deletion: " + qp);
-        logger.info("Heap after deletion: " + pq);
+//        logger.info("qp after deletion: " + qp);
+//        logger.info("Heap after deletion: " + pq);
         //FOR TESTING
         assert isMaxHeap();
     }
