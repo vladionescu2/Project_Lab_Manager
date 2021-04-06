@@ -3,6 +3,8 @@ package project.lab_management_syst.web.queue;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import project.lab_management_syst.persistence.model.CourseUnit;
 import project.lab_management_syst.persistence.model.LabExercise;
 import project.lab_management_syst.persistence.model.Submission;
@@ -13,6 +15,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 class LabQueue {
+    Logger logger = LogManager.getLogger();
+
     @Getter
     private final LabExercise labExercise;
     @Getter
@@ -54,6 +58,7 @@ class LabQueue {
         for (MarkingRequest markingRequest : this.labQueueComponent) {
             markingRequests.add(markingRequest);
         }
+        logger.info("All marking requests: " + markingRequests);
 
         return markingRequests;
     }

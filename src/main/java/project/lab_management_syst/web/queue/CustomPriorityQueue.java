@@ -173,17 +173,25 @@ public class CustomPriorityQueue implements Iterable<LabQueue.MarkingRequest> {
      * @return an index associated with a minimum key
      * @throws NoSuchElementException if this priority queue is empty
      */
+//    public LabQueue.MarkingRequest delMax() {
+//        if (this.size() == 0) throw new NoSuchElementException("Priority queue underflow");
+//        LabQueue.MarkingRequest max = pq.get(1);
+//        exch(1, this.size());
+//        sink(1);
+//        assert max == pq.get(this.size());
+//        qp.remove(max);
+//        pq.remove(this.size());
+//
+//        //FOR TESTING
+//        assert (isMaxHeap());
+//        return max;
+//    }
+
     public LabQueue.MarkingRequest delMax() {
         if (this.size() == 0) throw new NoSuchElementException("Priority queue underflow");
         LabQueue.MarkingRequest max = pq.get(1);
-        exch(1, this.size());
-        sink(1);
-        assert max == pq.get(this.size());
-        qp.remove(max);
-        pq.remove(this.size());
+        delete(pq.get(1));
 
-        //FOR TESTING
-        assert (isMaxHeap());
         return max;
     }
 
@@ -291,9 +299,12 @@ public class CustomPriorityQueue implements Iterable<LabQueue.MarkingRequest> {
         // add all elements to copy of heap
         // takes linear time since already in heap order so no keys move
         public HeapIterator() {
+            logger.info("Original pq:" + pq);
             copy = new CustomPriorityQueue(pq.size());
-            for (int i = 1; i <= copy.size(); i++)
+            for (int i = 1; i <= size(); i++)
                 copy.insert(pq.get(i));
+
+            logger.info("Iterator pq:" + this.copy.pq);
         }
 
         public boolean hasNext() {

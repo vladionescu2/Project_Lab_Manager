@@ -132,6 +132,7 @@ public class QueueManager {
     }
 
     public List<LabQueueSnapshot.StudentRequest> getAllStudentRequests(Long exerciseId) {
+        logger.info("Getting all requests for ex id " + exerciseId);
         LabQueue labQueue = this.hasLabQueue(exerciseId) ?
                 this.getLabQueue(exerciseId) : createNewLabQueue(exerciseId);
 
