@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
 import javax.persistence.*;
 import java.util.HashMap;
@@ -19,6 +20,7 @@ public class StudentRepo {
     @ManyToOne
     @JoinColumn
     @JsonBackReference
+    @ToString.Exclude
     Student student;
 
     @ManyToOne

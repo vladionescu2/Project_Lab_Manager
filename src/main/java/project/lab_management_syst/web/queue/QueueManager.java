@@ -27,6 +27,7 @@ public class QueueManager {
     private final SubmissionRepository submissionRepository;
     private final Map<String, QueuePositionListener> queuePositionsListeners;
     private final Map<Long, LabQueueListener> labQueueListeners;
+    private final Map<Long, Flux<LabQueueSnapshot>> labQueueFluxes;
 
     Logger logger = LogManager.getLogger();
 
@@ -39,15 +40,32 @@ public class QueueManager {
 
         this.queuePositionsListeners = new HashMap<>();
         this.labQueueListeners = new HashMap<>();
+        this.labQueueFluxes = new HashMap<>();
     }
 
     public Flux<QueuePositions> getStudentQueuePositionsStream(String userName) {
         logger.info("Creating new stream for " + userName);
-            return Flux.create(sink -> {
-                queuePositionsListeners.put(userName, new QueuePositionListener() {
+            return Flux.create(sink -> queuePositionsListeners.put(userName, new QueuePositionListener() {
+                @Override
+                public void onQueueChange(QueuePositions newPosition) {
+                    sink.next(newPosition);
+                }
+
+                @Override
+                public void complete() {
+                    sink.complete();
+                }
+            }));
+    }
+
+    public Flux<LabQueueSnapshot> getLabQueueStream(Long exerciseId) {
+        if (!labQueueFluxes.containsKey(exerciseId)) {
+            logger.info("Creating new stream for exercise id " + exerciseId);
+            Flux<LabQueueSnapshot> labQueueFlux = Flux.create(sink -> {
+                labQueueListeners.put(exerciseId, new LabQueueListener() {
                     @Override
-                    public void onQueueChange(QueuePositions newPosition) {
-                        sink.next(newPosition);
+                    public void onQueueChange(LabQueueSnapshot labQueueSnapshot) {
+                        sink.next(labQueueSnapshot);
                     }
 
                     @Override
@@ -56,18 +74,10 @@ public class QueueManager {
                     }
                 });
             });
-    }
-
-    public Flux<LabQueueSnapshot> getLabQueueStream(Long exerciseId) {
-        if (!labQueueListeners.containsKey(exerciseId)) {
-            logger.info("Creating new stream for exercise id " + exerciseId);
-            Flux<LabQueueSnapshot> labQueueFlux = Flux.create(sink -> {
-                labQueueListeners.put(exerciseId, new LabQueueListener(sink));
-            });
-            labQueueListeners.get(exerciseId).flux = labQueueFlux;
+            this.labQueueFluxes.put(exerciseId, labQueueFlux);
         }
 
-        return labQueueListeners.get(exerciseId).flux;
+        return labQueueFluxes.get(exerciseId);
     }
 
     public QueuePositions handleGetPendingRequests(List<Long> exerciseIds, String userName) {
@@ -149,10 +159,10 @@ public class QueueManager {
         LabQueue labQueue = this.getLabQueue(exerciseId);
 
         logger.info("Sending new queue positions for ex id " + exerciseId);
-//        if (labQueueListeners.containsKey(exerciseId)) {
-//            List<LabQueueSnapshot.StudentRequest> studentRequests = this.getAllStudentRequests(exerciseId);
-//            labQueueListeners.get(exerciseId).onQueueChange(new LabQueueSnapshot(studentRequests));
-//        }
+        if (labQueueListeners.containsKey(exerciseId)) {
+            List<LabQueueSnapshot.StudentRequest> studentRequests = this.getAllStudentRequests(exerciseId);
+            labQueueListeners.get(exerciseId).onQueueChange(new LabQueueSnapshot(studentRequests));
+        }
 
         for (String student : queuePositionsListeners.keySet()) {
             if (!labQueue.hasMarkingRequest(student)) { continue; }

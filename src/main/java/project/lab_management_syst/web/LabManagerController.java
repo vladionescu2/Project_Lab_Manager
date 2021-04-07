@@ -49,10 +49,10 @@ public class LabManagerController {
     @GetMapping(value = "/queue-pos/{username}", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public Flux<ServerSentEvent<QueuePositions>> streamQueuePosition(@PathVariable String username) {
         return this.queueManager.getStudentQueuePositionsStream(username).map(queuePositions -> ServerSentEvent.<QueuePositions>builder()
-                .event("new-pos")
-                .data(queuePositions)
-                .build());
-    }
+            .event("new-pos")
+            .data(queuePositions)
+            .build());
+}
 
     @GetMapping("/marking/{username}")
     public QueuePositions getMarkingRequests(@PathVariable String username, @RequestParam List<Long> exerciseIds) {

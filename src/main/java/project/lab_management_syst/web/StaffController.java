@@ -2,6 +2,7 @@ package project.lab_management_syst.web;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.http.codec.ServerSentEvent;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -11,7 +12,9 @@ import project.lab_management_syst.persistence.model.LabFormat;
 import project.lab_management_syst.persistence.repo.CourseUnitRepository;
 import project.lab_management_syst.persistence.repo.LabFormatRepository;
 import project.lab_management_syst.web.model.LabQueueSnapshot;
+import project.lab_management_syst.web.model.QueuePositions;
 import project.lab_management_syst.web.queue.QueueManager;
+import reactor.core.publisher.Flux;
 
 import java.util.List;
 
@@ -29,6 +32,14 @@ public class StaffController {
         this.courseUnitRepository = courseUnitRepository;
         this.labFormatRepository = labFormatRepository;
         this.queueManager = queueManager;
+    }
+
+    @GetMapping("stream/lab-queue/{exId}")
+    Flux<ServerSentEvent<LabQueueSnapshot>> getLabQueueStream(@PathVariable Long exId) {
+        return this.queueManager.getLabQueueStream(exId).map(queueSnapshot -> ServerSentEvent.<LabQueueSnapshot>builder()
+                .event("lab-snapshot")
+                .data(queueSnapshot)
+                .build());
     }
 
     @GetMapping("lab-queue/{exId}")
