@@ -208,6 +208,7 @@ public class CustomPriorityQueue implements Iterable<LabQueue.MarkingRequest> {
 //        logger.info("qp before deletion: " + qp);
 
         if (!contains(i)) throw new NoSuchElementException("index is not in the priority queue");
+        students.remove(i.getSubmission().getStudent().getUserName());
         int index = qp.get(i);
         if (index == this.size()) {
             qp.remove(i);

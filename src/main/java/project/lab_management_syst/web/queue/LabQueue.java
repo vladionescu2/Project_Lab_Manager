@@ -12,7 +12,9 @@ import project.lab_management_syst.persistence.model.Submission;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 class LabQueue {
     Logger logger = LogManager.getLogger();
@@ -22,11 +24,13 @@ class LabQueue {
     @Getter
     private final CourseUnit.LabTimes labTimes;
     private final CustomPriorityQueue labQueueComponent;
+    private final Map<String, MarkingRequest> unresolvedRequests;
 
     public LabQueue(CourseUnit.LabTimes labTimes, LabExercise labExercise) {
         this.labQueueComponent = new CustomPriorityQueue(300);
         this.labTimes = labTimes;
         this.labExercise = labExercise;
+        this.unresolvedRequests = new HashMap<>();
     }
 
     public int addMarkingRequest(Submission submission, int seatNr) {
@@ -34,15 +38,31 @@ class LabQueue {
     }
 
     public Integer getMarkingPosition(String userName) {
-        return this.labQueueComponent.getPosition(userName);
+        if (this.labQueueComponent.hasMarkingRequest(userName)) {
+            return this.labQueueComponent.getPosition(userName);
+        }
+
+        if (this.unresolvedRequests.containsKey(userName)) {
+            return 0;
+        }
+
+        return null;
     }
 
     public Integer getSeatNr(String userName) {
-        return this.labQueueComponent.getMarkingRequest(userName).getSeatNr();
+        if (this.labQueueComponent.hasMarkingRequest(userName)) {
+            return this.labQueueComponent.getMarkingRequest(userName).getSeatNr();
+        }
+
+        return this.unresolvedRequests.get(userName).getSeatNr();
+    }
+
+    public boolean hasUnresolvedRequest(String userName) {
+        return this.unresolvedRequests.containsKey(userName);
     }
 
     public boolean hasMarkingRequest(String userName) {
-        return this.labQueueComponent.hasMarkingRequest(userName);
+        return this.labQueueComponent.hasMarkingRequest(userName) || this.unresolvedRequests.containsKey(userName);
     }
 
     public MarkingRequest getMarkingRequest(String userName) {
@@ -51,6 +71,7 @@ class LabQueue {
 
     public void removeMarkingRequest(String userName) {
         this.labQueueComponent.deleteRequest(userName);
+        this.unresolvedRequests.remove(userName);
     }
 
     public List<MarkingRequest> getAllMarkingRequests() {
@@ -61,6 +82,13 @@ class LabQueue {
         logger.info("All marking requests: " + markingRequests);
 
         return markingRequests;
+    }
+
+    public MarkingRequest getNextMarkingRequest() {
+        MarkingRequest markingRequest = labQueueComponent.delMax();
+        this.unresolvedRequests.put(markingRequest.getSubmission().getStudent().getUserName(), markingRequest);
+
+        return markingRequest;
     }
 
     protected class MarkingRequest implements Comparable<MarkingRequest> {

@@ -2,11 +2,13 @@ package project.lab_management_syst.web;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.codec.ServerSentEvent;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.server.ResponseStatusException;
 import project.lab_management_syst.persistence.model.CourseUnit;
 import project.lab_management_syst.persistence.model.LabFormat;
 import project.lab_management_syst.persistence.repo.CourseUnitRepository;
@@ -17,6 +19,7 @@ import project.lab_management_syst.web.queue.QueueManager;
 import reactor.core.publisher.Flux;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 
 @RestController
 @RequestMapping("staff")
@@ -40,6 +43,19 @@ public class StaffController {
                 .event("lab-snapshot")
                 .data(queueSnapshot)
                 .build());
+    }
+
+    @GetMapping("next-student/{exId}")
+    public LabQueueSnapshot.StudentRequest getNextStudent(@PathVariable Long exId) {
+        try {
+            return this.queueManager.getNextStudent(exId);
+        }
+        catch (NoSuchElementException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Lab Queue is empty");
+        }
+        catch (IllegalArgumentException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No Lab Queue for the given exercise id");
+        }
     }
 
     @GetMapping("lab-queue/{exId}")

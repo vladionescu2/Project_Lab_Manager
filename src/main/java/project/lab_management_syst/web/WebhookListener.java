@@ -48,11 +48,11 @@ public class WebhookListener {
         String tag = ((String) eventInfo.get("ref")).replaceAll(".*/(.+)$", "$1");
         logger.info("Tag used: " + tag);
         LabExercise labExercise = labFormat.labExercises.get(tag);
-        LocalDateTime submissionDeadline = labExercise.getDeadline();
-        if (submissionDeadline == null) {
+        if (labExercise == null) {
             logger.info("The given tag is not used for a lab exercise");
             return "The given tag is not used for a lab exercise";
         }
+        LocalDateTime submissionDeadline = labExercise.getDeadline();
 
         boolean isLate = false;
         LocalDateTime timeStamp = LocalDateTime.now();

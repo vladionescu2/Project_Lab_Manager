@@ -26,6 +26,7 @@ public class QueueManager {
     private final LabExerciseRepository labExerciseRepository;
     private final SubmissionRepository submissionRepository;
     private final Map<String, QueuePositionListener> queuePositionsListeners;
+    private final Map<String, Flux<QueuePositions>> queuePositionsFluxes;
     private final Map<Long, LabQueueListener> labQueueListeners;
     private final Map<Long, Flux<LabQueueSnapshot>> labQueueFluxes;
 
@@ -39,13 +40,15 @@ public class QueueManager {
         this.labQueueMap = new HashMap<>();
 
         this.queuePositionsListeners = new HashMap<>();
+        this.queuePositionsFluxes = new HashMap<>();
         this.labQueueListeners = new HashMap<>();
         this.labQueueFluxes = new HashMap<>();
     }
 
     public Flux<QueuePositions> getStudentQueuePositionsStream(String userName) {
-        logger.info("Creating new stream for " + userName);
-            return Flux.create(sink -> queuePositionsListeners.put(userName, new QueuePositionListener() {
+        if (!queuePositionsFluxes.containsKey(userName)) {
+            logger.info("Creating new stream for " + userName);
+            Flux<QueuePositions> flux = Flux.create(sink -> queuePositionsListeners.put(userName, new QueuePositionListener() {
                 @Override
                 public void onQueueChange(QueuePositions newPosition) {
                     sink.next(newPosition);
@@ -56,6 +59,10 @@ public class QueueManager {
                     sink.complete();
                 }
             }));
+            this.queuePositionsFluxes.put(userName, flux);
+        }
+
+        return this.queuePositionsFluxes.get(userName);
     }
 
     public Flux<LabQueueSnapshot> getLabQueueStream(Long exerciseId) {
@@ -80,6 +87,29 @@ public class QueueManager {
         return labQueueFluxes.get(exerciseId);
     }
 
+    public LabQueueSnapshot.StudentRequest getNextStudent(Long exerciseId) {
+        if (!this.hasLabQueue(exerciseId)) {
+            throw new IllegalArgumentException("No lab queue with the given exercise id");
+        }
+
+        LabQueue labQueue = this.getLabQueue(exerciseId);
+        LabQueue.MarkingRequest markingRequest = labQueue.getNextMarkingRequest();
+        streamNewPositions(exerciseId);
+        streamMarkingReady(markingRequest.getSubmission().getStudent().getUserName(), exerciseId);
+
+        return new LabQueueSnapshot.StudentRequest(markingRequest.getSubmission().getStudent().getUserName(), markingRequest.getSeatNr());
+    }
+
+    private void streamMarkingReady(String userName, Long exerciseId) {
+        QueuePositions queuePositions = new QueuePositions();
+        queuePositions.positions.put(exerciseId, 0);
+        queuePositions.ready.add(exerciseId);
+
+        if (queuePositionsListeners.containsKey(userName)) {
+            queuePositionsListeners.get(userName).onQueueChange(queuePositions);
+        }
+    }
+
     public QueuePositions handleGetPendingRequests(List<Long> exerciseIds, String userName) {
         QueuePositions queuePositions = new QueuePositions();
         queuePositions.seatNr = null;
@@ -91,6 +121,9 @@ public class QueueManager {
                 if (queuePos != null) {
                     queuePositions.positions.put(exerciseId, queuePos);
                     queuePositions.seatNr = labQueue.getSeatNr(userName);
+                }
+                if (labQueue.hasUnresolvedRequest(userName)) {
+                    queuePositions.ready.add(exerciseId);
                 }
             }
         }
