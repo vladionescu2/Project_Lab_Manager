@@ -45,10 +45,10 @@ public class StaffController {
                 .build());
     }
 
-    @GetMapping("next-student/{exId}")
-    public LabQueueSnapshot.StudentRequest getNextStudent(@PathVariable Long exId) {
+    @GetMapping("next-student/{exId}/{userName}")
+    public LabQueueSnapshot.StudentRequest getNextStudent(@PathVariable Long exId, @PathVariable String userName) {
         try {
-            return this.queueManager.getNextStudent(exId);
+            return this.queueManager.getNextStudent(exId, userName);
         }
         catch (NoSuchElementException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Lab Queue is empty");
@@ -56,6 +56,13 @@ public class StaffController {
         catch (IllegalArgumentException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No Lab Queue for the given exercise id");
         }
+    }
+
+    @GetMapping("student-marked/{exId}/{userName}")
+    public String studentMarked(@PathVariable Long exId, @PathVariable String userName) {
+        this.queueManager.studentMarked(exId, userName);
+
+        return "Student marked";
     }
 
     @GetMapping("lab-queue/{exId}")

@@ -5,9 +5,11 @@ import lombok.Setter;
 import lombok.ToString;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 import project.lab_management_syst.persistence.model.CourseUnit;
 import project.lab_management_syst.persistence.model.LabExercise;
 import project.lab_management_syst.persistence.model.Submission;
+import project.lab_management_syst.persistence.repo.SubmissionRepository;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -25,12 +27,17 @@ class LabQueue {
     private final CourseUnit.LabTimes labTimes;
     private final CustomPriorityQueue labQueueComponent;
     private final Map<String, MarkingRequest> unresolvedRequests;
+    private final Map<String, MarkingRequest> staffCurrentMarkingRequest;
+    private final SubmissionRepository submissionRepository;
 
-    public LabQueue(CourseUnit.LabTimes labTimes, LabExercise labExercise) {
+    public LabQueue(CourseUnit.LabTimes labTimes, LabExercise labExercise, SubmissionRepository submissionRepository) {
         this.labQueueComponent = new CustomPriorityQueue(300);
         this.labTimes = labTimes;
         this.labExercise = labExercise;
         this.unresolvedRequests = new HashMap<>();
+        this.staffCurrentMarkingRequest = new HashMap<>();
+
+        this.submissionRepository = submissionRepository;
     }
 
     public int addMarkingRequest(Submission submission, int seatNr) {
@@ -84,11 +91,28 @@ class LabQueue {
         return markingRequests;
     }
 
-    public MarkingRequest getNextMarkingRequest() {
+    public MarkingRequest getNextMarkingRequest(String staffUserName) {
         MarkingRequest markingRequest = labQueueComponent.delMax();
         this.unresolvedRequests.put(markingRequest.getSubmission().getStudent().getUserName(), markingRequest);
+        this.staffCurrentMarkingRequest.put(staffUserName, markingRequest);
 
         return markingRequest;
+    }
+
+    public String studentMarked(String staffUserName) {
+        MarkingRequest markingRequest = this.staffCurrentMarkingRequest.get(staffUserName);
+        if (markingRequest == null) {
+            return null;
+        }
+        markingRequest.getSubmission().setMarked(true);
+        this.submissionRepository.save(markingRequest.getSubmission());
+
+        String studentUserName = markingRequest.getSubmission().getStudent().getUserName();
+
+        this.staffCurrentMarkingRequest.remove(staffUserName);
+        this.unresolvedRequests.remove(studentUserName);
+
+        return studentUserName;
     }
 
     protected class MarkingRequest implements Comparable<MarkingRequest> {

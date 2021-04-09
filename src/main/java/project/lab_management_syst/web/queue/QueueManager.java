@@ -87,23 +87,44 @@ public class QueueManager {
         return labQueueFluxes.get(exerciseId);
     }
 
-    public LabQueueSnapshot.StudentRequest getNextStudent(Long exerciseId) {
+    public LabQueueSnapshot.StudentRequest getNextStudent(Long exerciseId, String userName) {
         if (!this.hasLabQueue(exerciseId)) {
             throw new IllegalArgumentException("No lab queue with the given exercise id");
         }
 
         LabQueue labQueue = this.getLabQueue(exerciseId);
-        LabQueue.MarkingRequest markingRequest = labQueue.getNextMarkingRequest();
+        LabQueue.MarkingRequest markingRequest = labQueue.getNextMarkingRequest(userName);
         streamNewPositions(exerciseId);
         streamMarkingReady(markingRequest.getSubmission().getStudent().getUserName(), exerciseId);
 
         return new LabQueueSnapshot.StudentRequest(markingRequest.getSubmission().getStudent().getUserName(), markingRequest.getSeatNr());
     }
 
+    public void studentMarked(Long exerciseId, String staffUserName) {
+        if (!this.hasLabQueue(exerciseId)) {
+            throw new IllegalArgumentException("No lab queue with the given exercise id");
+        }
+
+        LabQueue labQueue = this.getLabQueue(exerciseId);
+        String studentUserName = labQueue.studentMarked(staffUserName);
+        if (studentUserName != null) {
+            streamMarkingDone(studentUserName, exerciseId);
+        }
+    }
+
     private void streamMarkingReady(String userName, Long exerciseId) {
         QueuePositions queuePositions = new QueuePositions();
         queuePositions.positions.put(exerciseId, 0);
         queuePositions.ready.add(exerciseId);
+
+        if (queuePositionsListeners.containsKey(userName)) {
+            queuePositionsListeners.get(userName).onQueueChange(queuePositions);
+        }
+    }
+
+    private void streamMarkingDone(String userName, Long exerciseId) {
+        QueuePositions queuePositions = new QueuePositions();
+        queuePositions.marked.add(exerciseId);
 
         if (queuePositionsListeners.containsKey(userName)) {
             queuePositionsListeners.get(userName).onQueueChange(queuePositions);
@@ -219,7 +240,7 @@ public class QueueManager {
         List<CourseUnit.LabTimes> labTimes = labExercise.getLabFormat().getCourseUnit().getLabTimes();
         CourseUnit.LabTimes upcomingLab = this.findUpcomingLabSession(labTimes);
 
-        LabQueue newLabQueue = new LabQueue(upcomingLab, labExercise);
+        LabQueue newLabQueue = new LabQueue(upcomingLab, labExercise, this.submissionRepository);
         this.addLabQueue(labExerciseId, newLabQueue);
 
         return newLabQueue;
