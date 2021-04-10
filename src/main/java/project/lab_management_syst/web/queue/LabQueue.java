@@ -2,10 +2,8 @@ package project.lab_management_syst.web.queue;
 
 import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
 import project.lab_management_syst.persistence.model.CourseUnit;
 import project.lab_management_syst.persistence.model.LabExercise;
 import project.lab_management_syst.persistence.model.Submission;
@@ -31,7 +29,7 @@ class LabQueue {
     private final SubmissionRepository submissionRepository;
 
     public LabQueue(CourseUnit.LabTimes labTimes, LabExercise labExercise, SubmissionRepository submissionRepository) {
-        this.labQueueComponent = new CustomPriorityQueue(300);
+        this.labQueueComponent = new CustomPriorityQueue();
         this.labTimes = labTimes;
         this.labExercise = labExercise;
         this.unresolvedRequests = new HashMap<>();
