@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 @EqualsAndHashCode
 public class LabExercise {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long exerciseId;
 
     @ManyToOne

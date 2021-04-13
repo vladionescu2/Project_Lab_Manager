@@ -113,6 +113,13 @@ class LabQueue {
         return studentUserName;
     }
 
+    public MarkingRequest getPendingStudent(String staffUserName) {
+        if (!staffCurrentMarkingRequest.containsKey(staffUserName))
+            return null;
+
+        return staffCurrentMarkingRequest.get(staffUserName);
+    }
+
     protected class MarkingRequest implements Comparable<MarkingRequest> {
         @Getter
         private final Submission submission;

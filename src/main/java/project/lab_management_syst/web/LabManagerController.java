@@ -10,10 +10,12 @@ import org.springframework.http.codec.ServerSentEvent;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
+import project.lab_management_syst.persistence.model.CourseUnit;
 import project.lab_management_syst.persistence.model.Student;
 import project.lab_management_syst.persistence.model.StudentRepo;
 import project.lab_management_syst.persistence.repo.StudentRepository;
 import project.lab_management_syst.web.model.GetMarkingRequest;
+import project.lab_management_syst.web.model.StudentSubmissions;
 import project.lab_management_syst.web.queue.QueueManager;
 import project.lab_management_syst.web.model.QueuePositions;
 import reactor.core.publisher.Flux;
@@ -35,11 +37,22 @@ public class LabManagerController {
     }
 
     @GetMapping("/submission/{id}")
-    public Map<String, StudentRepo> getStudentSubmissions(@PathVariable String id) {
+    public List<StudentSubmissions> getStudentSubmissions(@PathVariable String id) {
         logger.info("Request for student with username " + id);
-
+        Map<String, StudentSubmissions> studentSubmissionsMap = new HashMap<>();
         try {
-            return studentRepository.findByUserName(id).getCurrentLabs();
+            Collection<StudentRepo> studentRepos = studentRepository.findByUserName(id).getCurrentLabs().values();
+
+            for (StudentRepo studentRepo : studentRepos) {
+                CourseUnit courseUnit = studentRepo.getLab().getCourseUnit();
+                String unitCode = courseUnit.getUnitCode();
+                if (!studentSubmissionsMap.containsKey(unitCode)) {
+                    studentSubmissionsMap.put(unitCode, new StudentSubmissions(courseUnit));
+                }
+                studentSubmissionsMap.get(unitCode).studentRepos.add(studentRepo);
+            }
+
+            return new ArrayList<>(studentSubmissionsMap.values());
         }
         catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Student doesn't exist in the database");

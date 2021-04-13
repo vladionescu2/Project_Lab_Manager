@@ -5,4 +5,6 @@ import project.lab_management_syst.persistence.model.Student;
 
 public interface StudentRepository extends CrudRepository<Student, String> {
     Student findByUserName(String userName);
+
+
 }

@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import project.lab_management_syst.persistence.model.*;
+import project.lab_management_syst.persistence.repo.LabExerciseRepository;
 import project.lab_management_syst.persistence.repo.LabFormatRepository;
 import project.lab_management_syst.persistence.repo.StudentRepository;
 
@@ -18,10 +19,14 @@ public class WebhookListener {
 
     private StudentRepository studentRepository;
     private LabFormatRepository labFormatRepository;
+    private LabExerciseRepository labExerciseRepository;
 
-    public WebhookListener(StudentRepository studentRepository, LabFormatRepository labFormatRepository) {
+    public WebhookListener(StudentRepository studentRepository,
+                           LabFormatRepository labFormatRepository,
+                           LabExerciseRepository labExerciseRepository) {
         this.studentRepository = studentRepository;
         this.labFormatRepository = labFormatRepository;
+        this.labExerciseRepository = labExerciseRepository;
     }
 
     @PostMapping(path = "/receiver", consumes = "application/json")
@@ -47,7 +52,7 @@ public class WebhookListener {
 
         String tag = ((String) eventInfo.get("ref")).replaceAll(".*/(.+)$", "$1");
         logger.info("Tag used: " + tag);
-        LabExercise labExercise = labFormat.labExercises.get(tag);
+        LabExercise labExercise = labExerciseRepository.findByLabFormatAndExerciseName(labFormat, tag);
         if (labExercise == null) {
             logger.info("The given tag is not used for a lab exercise");
             return "The given tag is not used for a lab exercise";
@@ -76,7 +81,7 @@ public class WebhookListener {
         }
         newLab.setStudent(currentStudent);
         newSubmission.setStudentRepo(newLab);
-        newLab.getSubmissions().put(newSubmission.getSubmissionTag(), newSubmission);
+        newLab.getSubmissions().add(newSubmission);
         currentStudent.getCurrentLabs().put(labFormat.repoNamingSchema, newLab);
         studentRepository.save(currentStudent);
 

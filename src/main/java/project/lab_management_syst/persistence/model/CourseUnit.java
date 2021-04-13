@@ -1,5 +1,6 @@
 package project.lab_management_syst.persistence.model;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -12,8 +13,14 @@ import java.util.List;
 @Data
 @EqualsAndHashCode
 public class CourseUnit {
-    public CourseUnit() {
-        this.staffMembers = new ArrayList<>();
+    public CourseUnit() { }
+
+    public static CourseUnit initCourseUnit() {
+        CourseUnit courseUnit = new CourseUnit();
+        courseUnit.staffMembers = new ArrayList<>();
+        courseUnit.labTimes = new ArrayList<>();
+
+        return courseUnit;
     }
 
     @Entity
@@ -21,11 +28,15 @@ public class CourseUnit {
     @EqualsAndHashCode
     public static class LabTimes {
         @Id
-        @GeneratedValue
+        @GeneratedValue(strategy = GenerationType.IDENTITY)
         private Long id;
         LocalDateTime start;
         LocalDateTime end;
     }
+
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "courseUnit")
+    @JsonManagedReference
+    List<LabFormat> labFormats;
 
     @ElementCollection
     List<String> staffMembers;
@@ -33,6 +44,6 @@ public class CourseUnit {
     @Id
     String unitCode;
 
-    @OneToMany
+    @OneToMany(cascade = CascadeType.ALL)
     List<LabTimes> labTimes;
 }

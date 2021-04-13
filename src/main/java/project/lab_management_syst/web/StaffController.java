@@ -4,20 +4,19 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.codec.ServerSentEvent;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 import project.lab_management_syst.persistence.model.CourseUnit;
 import project.lab_management_syst.persistence.model.LabFormat;
 import project.lab_management_syst.persistence.repo.CourseUnitRepository;
 import project.lab_management_syst.persistence.repo.LabFormatRepository;
 import project.lab_management_syst.web.model.LabQueueSnapshot;
+import project.lab_management_syst.web.model.NewUnitRequest;
 import project.lab_management_syst.web.model.QueuePositions;
 import project.lab_management_syst.web.queue.QueueManager;
 import reactor.core.publisher.Flux;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 
@@ -37,8 +36,43 @@ public class StaffController {
         this.queueManager = queueManager;
     }
 
+    @GetMapping("/all-codes")
+    public List<String> getAllCodes() {
+
+        List<String> allCourseUnits = new ArrayList<>();
+        for (CourseUnit courseUnit : this.courseUnitRepository.findAll()) {
+            allCourseUnits.add(courseUnit.getUnitCode());
+        }
+
+        return allCourseUnits;
+    }
+
+    @PostMapping("/new-unit")
+    public CourseUnit createNewCourseUnit(@RequestBody NewUnitRequest newUnitRequest) {
+        if (this.courseUnitRepository.findById(newUnitRequest.unitCode).isPresent()) {
+            throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE, "Course Unit already exists!");
+        }
+
+        CourseUnit newCourseUnit = new CourseUnit();
+        newCourseUnit.setUnitCode(newUnitRequest.unitCode);
+        newCourseUnit.setStaffMembers(newUnitRequest.staffMembers);
+
+        List<CourseUnit.LabTimes> sessionLabTimes = new ArrayList<>();
+        for (NewUnitRequest.LabTimes labTimes : newUnitRequest.labDates) {
+            CourseUnit.LabTimes newLabTimes = new CourseUnit.LabTimes();
+            newLabTimes.setStart(labTimes.start);
+            newLabTimes.setEnd(labTimes.end);
+
+            sessionLabTimes.add(newLabTimes);
+        }
+        newCourseUnit.setLabTimes(sessionLabTimes);
+
+        courseUnitRepository.save(newCourseUnit);
+        return courseUnitRepository.findById(newCourseUnit.getUnitCode()).get();
+    }
+
     @GetMapping("stream/lab-queue/{exId}")
-    Flux<ServerSentEvent<LabQueueSnapshot>> getLabQueueStream(@PathVariable Long exId) {
+    public Flux<ServerSentEvent<LabQueueSnapshot>> getLabQueueStream(@PathVariable Long exId) {
         return this.queueManager.getLabQueueStream(exId).map(queueSnapshot -> ServerSentEvent.<LabQueueSnapshot>builder()
                 .event("lab-snapshot")
                 .data(queueSnapshot)
@@ -49,6 +83,19 @@ public class StaffController {
     public LabQueueSnapshot.StudentRequest getNextStudent(@PathVariable Long exId, @PathVariable String userName) {
         try {
             return this.queueManager.getNextStudent(exId, userName);
+        }
+        catch (NoSuchElementException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Lab Queue is empty");
+        }
+        catch (IllegalArgumentException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No Lab Queue for the given exercise id");
+        }
+    }
+
+    @GetMapping("pending-student/{exId}/{userName}")
+    public LabQueueSnapshot.StudentRequest getPendingStudent(@PathVariable Long exId, @PathVariable String userName) {
+        try {
+            return this.queueManager.getPendingStudent(exId, userName);
         }
         catch (NoSuchElementException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Lab Queue is empty");
@@ -73,10 +120,10 @@ public class StaffController {
     }
 
     @GetMapping("course-units/{id}")
-    public List<LabFormat> getCourseUnits(@PathVariable String id) {
+    public List<CourseUnit> getCourseUnits(@PathVariable String id) {
         logger.info("Getting staff course units for " + id);
 
-        List<LabFormat> labFormats = this.labFormatRepository.findByCourseUnitStaffMembers(id);
+        List<CourseUnit> labFormats = this.courseUnitRepository.findByStaffMembers(id);
 
         return labFormats;
     }

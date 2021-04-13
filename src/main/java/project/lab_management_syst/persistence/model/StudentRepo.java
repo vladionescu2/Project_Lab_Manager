@@ -7,7 +7,9 @@ import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Entity
@@ -28,13 +30,12 @@ public class StudentRepo {
     LabFormat lab;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "studentRepo")
-    @MapKey(name="submissionTag")
     @JsonManagedReference
-    Map<String, Submission> submissions;
+    List<Submission> submissions;
 
     public StudentRepo() {
         super();
-        this.submissions = new HashMap<String, Submission>();
+        this.submissions = new ArrayList<>();
     }
 
     public StudentRepo(LabFormat labFormat, String userName) {

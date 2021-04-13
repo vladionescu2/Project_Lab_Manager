@@ -100,6 +100,20 @@ public class QueueManager {
         return new LabQueueSnapshot.StudentRequest(markingRequest.getSubmission().getStudent().getUserName(), markingRequest.getSeatNr());
     }
 
+    public LabQueueSnapshot.StudentRequest getPendingStudent(Long exerciseId, String userName) {
+        if (!this.hasLabQueue(exerciseId)) {
+            throw new IllegalArgumentException("No lab queue with the given exercise id");
+        }
+
+        LabQueue labQueue = this.getLabQueue(exerciseId);
+        LabQueue.MarkingRequest markingRequest = labQueue.getPendingStudent(userName);
+        if (markingRequest == null) {
+            return null;
+        }
+
+        return new LabQueueSnapshot.StudentRequest(markingRequest.getSubmission().getStudent().getUserName(), markingRequest.getSeatNr());
+    }
+
     public void studentMarked(Long exerciseId, String staffUserName) {
         if (!this.hasLabQueue(exerciseId)) {
             throw new IllegalArgumentException("No lab queue with the given exercise id");
