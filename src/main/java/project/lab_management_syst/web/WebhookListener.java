@@ -82,7 +82,7 @@ public class WebhookListener {
         newLab.setStudent(currentStudent);
         newSubmission.setStudentRepo(newLab);
         newLab.getSubmissions().add(newSubmission);
-        currentStudent.getCurrentLabs().put(labFormat.repoNamingSchema, newLab);
+        currentStudent.getCurrentLabs().put(labFormat.getRepoNamingSchema(), newLab);
         studentRepository.save(currentStudent);
 
         logger.info("Saved new submission");

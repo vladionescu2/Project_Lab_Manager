@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
 public class LabExercise {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long exerciseId;
+    private Long exerciseId;
 
     @ManyToOne
     @JoinColumn

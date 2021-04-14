@@ -16,15 +16,15 @@ import java.util.Map;
 @EqualsAndHashCode
 public class LabFormat {
     @Id
-    public String repoNamingSchema;
+    String repoNamingSchema;
 
     @ManyToOne
     @JsonBackReference
     @JoinColumn
     @ToString.Exclude
-    public CourseUnit courseUnit;
+    CourseUnit courseUnit;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "labFormat")
     @JsonManagedReference
-    public List<LabExercise> labExercises;
+    List<LabExercise> labExercises;
 }
