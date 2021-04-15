@@ -9,8 +9,10 @@ import org.springframework.web.server.ResponseStatusException;
 import project.lab_management_syst.persistence.model.CourseUnit;
 import project.lab_management_syst.persistence.model.LabExercise;
 import project.lab_management_syst.persistence.model.LabFormat;
+import project.lab_management_syst.persistence.model.StudentRepo;
 import project.lab_management_syst.persistence.repo.CourseUnitRepository;
 import project.lab_management_syst.persistence.repo.LabFormatRepository;
+import project.lab_management_syst.persistence.repo.StudentRepoRepository;
 import project.lab_management_syst.web.model.LabQueueSnapshot;
 import project.lab_management_syst.web.model.NewLabFormatData;
 import project.lab_management_syst.web.model.NewUnitData;
@@ -28,28 +30,55 @@ public class StaffController {
     Logger logger = LogManager.getLogger();
     CourseUnitRepository courseUnitRepository;
     LabFormatRepository labFormatRepository;
+    StudentRepoRepository studentRepoRepository;
     QueueManager queueManager;
 
     public StaffController(CourseUnitRepository courseUnitRepository,
                            LabFormatRepository labFormatRepository,
+                           StudentRepoRepository studentRepoRepository,
                            QueueManager queueManager) {
         this.courseUnitRepository = courseUnitRepository;
         this.labFormatRepository = labFormatRepository;
+        this.studentRepoRepository = studentRepoRepository;
         this.queueManager = queueManager;
     }
 
     @DeleteMapping("/lab-format/{formatName}")
     public String deleteLabFormat(@PathVariable String formatName) {
-        labFormatRepository.deleteById(formatName);
+        LabFormat labFormat = labFormatRepository.findByRepoNamingSchema(formatName);
+        if (labFormat == null) {
+            return "No LabFormat with the format name exists.";
+        }
+
+        deleteAllStudentRepos(labFormat);
+        labFormatRepository.delete(labFormat);
 
         return "Done!";
     }
 
     @DeleteMapping("/course-unit/{unitCode}")
     public String deleteCourseUnit(@PathVariable String unitCode) {
+        CourseUnit courseUnit = courseUnitRepository.findByUnitCode(unitCode);
+        if (courseUnit == null) {
+            return "No CourseUnit with the given unit code exists.";
+        }
+
+        for (LabFormat labFormat : courseUnit.getLabFormats()) {
+            deleteAllStudentRepos(labFormat);
+            labFormatRepository.delete(labFormat);
+        }
+
         courseUnitRepository.deleteById(unitCode);
 
         return "Done!";
+    }
+
+    private void deleteAllStudentRepos(LabFormat labFormat) {
+        List<StudentRepo> studentRepos = studentRepoRepository.findByLab(labFormat);
+
+        for (StudentRepo studentRepo : studentRepos) {
+            studentRepoRepository.delete(studentRepo);
+        }
     }
 
     @GetMapping("/all-codes")

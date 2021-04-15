@@ -32,6 +32,9 @@ public class Student {
     Map<String, StudentRepo> currentLabs;
 
     public StudentRepo generateStudentRepo(LabFormat labFormat) {
-        return new StudentRepo(labFormat, userName);
+        StudentRepo studentRepo = new StudentRepo(labFormat, this);
+        this.currentLabs.put(studentRepo.repoName, studentRepo);
+
+        return studentRepo;
     }
 }

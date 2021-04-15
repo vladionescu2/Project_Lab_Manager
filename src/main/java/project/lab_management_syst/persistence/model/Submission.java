@@ -19,7 +19,7 @@ public class Submission {
     boolean isLate = false;
     boolean isMarked = false;
 
-    @OneToOne(cascade = CascadeType.ALL)
+    @OneToOne()
     LabExercise labExercise;
 
     @OneToOne

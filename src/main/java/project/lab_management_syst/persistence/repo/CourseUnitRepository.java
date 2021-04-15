@@ -6,5 +6,7 @@ import project.lab_management_syst.persistence.model.CourseUnit;
 import java.util.List;
 
 public interface CourseUnitRepository extends CrudRepository<CourseUnit, String> {
+    CourseUnit findByUnitCode(String unitCode);
+
     List<CourseUnit> findByStaffMembers(String staffId);
 }

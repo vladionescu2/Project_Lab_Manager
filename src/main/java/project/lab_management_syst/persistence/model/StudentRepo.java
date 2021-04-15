@@ -38,9 +38,10 @@ public class StudentRepo {
         this.submissions = new ArrayList<>();
     }
 
-    public StudentRepo(LabFormat labFormat, String userName) {
+    public StudentRepo(LabFormat labFormat, Student student) {
         this();
-        this.repoName = labFormat.repoNamingSchema + "_" + userName;
+        this.repoName = labFormat.repoNamingSchema + "_" + student.getUserName();
         this.lab = labFormat;
+        this.student = student;
     }
 }

@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RestController;
 import project.lab_management_syst.persistence.model.*;
 import project.lab_management_syst.persistence.repo.LabExerciseRepository;
 import project.lab_management_syst.persistence.repo.LabFormatRepository;
+import project.lab_management_syst.persistence.repo.StudentRepoRepository;
 import project.lab_management_syst.persistence.repo.StudentRepository;
 
 import java.time.LocalDateTime;
@@ -20,13 +21,16 @@ public class WebhookListener {
     private StudentRepository studentRepository;
     private LabFormatRepository labFormatRepository;
     private LabExerciseRepository labExerciseRepository;
+    private StudentRepoRepository studentRepoRepository;
 
     public WebhookListener(StudentRepository studentRepository,
                            LabFormatRepository labFormatRepository,
-                           LabExerciseRepository labExerciseRepository) {
+                           LabExerciseRepository labExerciseRepository,
+                           StudentRepoRepository studentRepoRepository) {
         this.studentRepository = studentRepository;
         this.labFormatRepository = labFormatRepository;
         this.labExerciseRepository = labExerciseRepository;
+        this.studentRepoRepository = studentRepoRepository;
     }
 
     @PostMapping(path = "/receiver", consumes = "application/json")
@@ -74,15 +78,13 @@ public class WebhookListener {
         newSubmission.setStudent(currentStudent);
         newSubmission.setLate(isLate);
 
-        StudentRepo newLab = currentStudent.getCurrentLabs().get(repoName);
-        if (newLab == null) {
+        StudentRepo studentRepo = studentRepoRepository.findByRepoName(repoName);
+        if (studentRepo == null) {
             logger.info("Creating new StudentRepo called " + repoName);
-            newLab = currentStudent.generateStudentRepo(labFormat);
+            studentRepo = currentStudent.generateStudentRepo(labFormat);
         }
-        newLab.setStudent(currentStudent);
-        newSubmission.setStudentRepo(newLab);
-        newLab.getSubmissions().add(newSubmission);
-        currentStudent.getCurrentLabs().put(labFormat.getRepoNamingSchema(), newLab);
+        newSubmission.setStudentRepo(studentRepo);
+        studentRepo.getSubmissions().add(newSubmission);
         studentRepository.save(currentStudent);
 
         logger.info("Saved new submission");
