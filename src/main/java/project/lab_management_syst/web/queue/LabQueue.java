@@ -38,7 +38,7 @@ class LabQueue {
         this.submissionRepository = submissionRepository;
     }
 
-    public int addMarkingRequest(Submission submission, int seatNr) {
+    public int addMarkingRequest(Submission submission, String seatNr) {
         return this.labQueueComponent.insert(new MarkingRequest(submission, seatNr));
     }
 
@@ -54,7 +54,7 @@ class LabQueue {
         return null;
     }
 
-    public Integer getSeatNr(String userName) {
+    public String getSeatNr(String userName) {
         if (this.labQueueComponent.hasMarkingRequest(userName)) {
             return this.labQueueComponent.getMarkingRequest(userName).getSeatNr();
         }
@@ -125,7 +125,7 @@ class LabQueue {
         private final Submission submission;
         @Getter
         @Setter
-        private int seatNr;
+        private String seatNr;
         public final int score;
 
         public MarkingRequest(Submission submission) {
@@ -133,7 +133,7 @@ class LabQueue {
             this.score = this.determineRequestScore();
         }
 
-        public MarkingRequest(Submission submission, int seatNr) {
+        public MarkingRequest(Submission submission, String seatNr) {
             this(submission);
             this.seatNr = seatNr;
         }

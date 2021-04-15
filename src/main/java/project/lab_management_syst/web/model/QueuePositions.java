@@ -9,7 +9,7 @@ public class QueuePositions {
     public Map<Long, Integer> positions;
     public List<Long> marked;
     public List<Long> ready;
-    public Integer seatNr;
+    public String seatNr;
 
     public QueuePositions() {
         this.positions = new HashMap<>();

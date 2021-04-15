@@ -11,9 +11,9 @@ public class LabQueueSnapshot {
 
     public static class StudentRequest {
         public String userName;
-        public int seatNr;
+        public String seatNr;
 
-        public StudentRequest(String userName, int seatNr) {
+        public StudentRequest(String userName, String seatNr) {
             this.seatNr = seatNr;
             this.userName = userName;
         }
