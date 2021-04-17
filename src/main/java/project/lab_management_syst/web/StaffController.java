@@ -181,6 +181,36 @@ public class StaffController {
         }
     }
 
+    @GetMapping("cancel-marking")
+    public String cancelMarking(@RequestParam Long exId, @RequestParam String staffUserName) {
+        try {
+            this.queueManager.cancelMarkingForStaff(exId, staffUserName);
+
+            return "Cancelled staff marking!";
+        }
+        catch (NoSuchElementException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Lab Queue is empty");
+        }
+        catch (IllegalArgumentException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No Lab Queue for the given exercise id");
+        }
+    }
+
+    @GetMapping("mark-student")
+    public LabQueueSnapshot.StudentRequest getStudentForMarking(@RequestParam Long exId,
+                                                               @RequestParam String studentUserName,
+                                                               @RequestParam String staffUserName) {
+        try {
+            return this.queueManager.getStudentForMarking(exId, staffUserName, studentUserName);
+        }
+        catch (NoSuchElementException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Lab Queue is empty");
+        }
+        catch (IllegalArgumentException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No Lab Queue for the given exercise id");
+        }
+    }
+
     @GetMapping("pending-student/{exId}/{userName}")
     public LabQueueSnapshot.StudentRequest getPendingStudent(@PathVariable Long exId, @PathVariable String userName) {
         try {

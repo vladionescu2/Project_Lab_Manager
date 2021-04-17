@@ -75,8 +75,11 @@ class LabQueue {
     }
 
     public void removeMarkingRequest(String userName) {
-        this.labQueueComponent.deleteRequest(userName);
-        this.unresolvedRequests.remove(userName);
+        MarkingRequest markingRequest = this.labQueueComponent.deleteRequest(userName);
+        markingRequest = markingRequest == null ? this.unresolvedRequests.remove(userName) : markingRequest;
+        if (markingRequest != null) {
+            this.staffCurrentMarkingRequest.values().remove(markingRequest);
+        }
     }
 
     public List<MarkingRequest> getAllMarkingRequests() {
@@ -95,6 +98,28 @@ class LabQueue {
         this.staffCurrentMarkingRequest.put(staffUserName, markingRequest);
 
         return markingRequest;
+    }
+
+    public MarkingRequest assignMarkingRequest(String staffUserName, String studentUserName) {
+        MarkingRequest markingRequest = labQueueComponent.deleteAndGetRequest(studentUserName);
+
+        this.unresolvedRequests.put(markingRequest.getSubmission().getStudent().getUserName(), markingRequest);
+        this.staffCurrentMarkingRequest.put(staffUserName, markingRequest);
+
+        return markingRequest;
+    }
+
+    public void cancelMarkingRequest(String staffUserName) {
+        MarkingRequest markingRequest = staffCurrentMarkingRequest.get(staffUserName);
+
+        if (markingRequest == null) {
+            throw new IllegalArgumentException("Staff member has no assigned marking request currently!");
+        }
+
+        this.staffCurrentMarkingRequest.remove(staffUserName);
+        this.unresolvedRequests.remove(markingRequest.getSubmission().getStudent().getUserName());
+
+        labQueueComponent.insert(markingRequest);
     }
 
     public String studentMarked(String staffUserName) {

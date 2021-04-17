@@ -34,13 +34,26 @@ public class CustomPriorityQueue implements Iterable<LabQueue.MarkingRequest>{
         return students.containsKey(userName);
     }
 
-    public void deleteRequest(String userName) {
+    public LabQueue.MarkingRequest deleteRequest(String userName) {
         LabQueue.MarkingRequest request = students.get(userName);
 
         if (request != null) {
             queue.remove(request);
             students.remove(userName);
         }
+
+        return request;
+    }
+
+    public LabQueue.MarkingRequest deleteAndGetRequest(String userName) {
+        LabQueue.MarkingRequest request = students.get(userName);
+
+        if (request != null) {
+            queue.remove(request);
+            students.remove(userName);
+        }
+
+        return request;
     }
 
     public int size() { return queue.size(); }

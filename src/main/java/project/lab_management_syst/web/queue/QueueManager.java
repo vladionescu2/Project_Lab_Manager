@@ -100,6 +100,30 @@ public class QueueManager {
         return new LabQueueSnapshot.StudentRequest(markingRequest.getSubmission().getStudent().getUserName(), markingRequest.getSeatNr());
     }
 
+    public LabQueueSnapshot.StudentRequest getStudentForMarking(Long exerciseId, String staffUserName,
+                                                                String studentUserName) {
+        if (!this.hasLabQueue(exerciseId)) {
+            throw new IllegalArgumentException("No lab queue with the given exercise id");
+        }
+
+        LabQueue labQueue = this.getLabQueue(exerciseId);
+        LabQueue.MarkingRequest markingRequest = labQueue.assignMarkingRequest(staffUserName, studentUserName);
+        streamNewPositions(exerciseId);
+        streamMarkingReady(markingRequest.getSubmission().getStudent().getUserName(), exerciseId);
+
+        return new LabQueueSnapshot.StudentRequest(markingRequest.getSubmission().getStudent().getUserName(), markingRequest.getSeatNr());
+    }
+
+    public void cancelMarkingForStaff(Long exerciseId, String staffUserName) {
+        if (!this.hasLabQueue(exerciseId)) {
+            throw new IllegalArgumentException("No lab queue with the given exercise id");
+        }
+
+        LabQueue labQueue = this.getLabQueue(exerciseId);
+        labQueue.cancelMarkingRequest(staffUserName);
+        streamNewPositions(exerciseId);
+    }
+
     public LabQueueSnapshot.StudentRequest getPendingStudent(Long exerciseId, String userName) {
         if (!this.hasLabQueue(exerciseId)) {
             throw new IllegalArgumentException("No lab queue with the given exercise id");
