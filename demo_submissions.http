@@ -1,0 +1,288 @@
+### New submission
+POST http://localhost:8080/receiver
+Content-Type: application/json
+X-Gitlab-Event: Tag Push Hook
+X-Gitlab-Token: secret
+
+{
+  "object_kind": "tag_push",
+  "event_name": "tag_push",
+  "ref": "refs/tags/demo_ex1",
+  "checkout_sha": "c7a15d1f42b65587b2da637cdf1d484d7dd4109a",
+  "user_username": "student1",
+  "project": {
+    "name": "DEMO_Lab_student1"
+  }
+}
+### New submission
+POST http://localhost:8080/receiver
+Content-Type: application/json
+X-Gitlab-Event: Tag Push Hook
+X-Gitlab-Token: secret
+
+{
+  "object_kind": "tag_push",
+  "event_name": "tag_push",
+  "ref": "refs/tags/demo_ex2",
+  "checkout_sha": "74573f959eacacde6e6e093d247575999e99ebfe",
+  "user_username": "student1",
+  "project": {
+    "name": "DEMO_Lab_student1"
+  }
+}
+### New submission
+POST http://localhost:8080/receiver
+Content-Type: application/json
+X-Gitlab-Event: Tag Push Hook
+X-Gitlab-Token: secret
+
+{
+  "object_kind": "tag_push",
+  "event_name": "tag_push",
+  "ref": "refs/tags/demo_ex3",
+  "checkout_sha": "05f5f8c56e8cecacfb331aca9b0b27d521baac45",
+  "user_username": "student1",
+  "project": {
+    "name": "DEMO_Lab_student1"
+  }
+}
+### New submission
+POST http://localhost:8080/receiver
+Content-Type: application/json
+X-Gitlab-Event: Tag Push Hook
+X-Gitlab-Token: secret
+
+{
+  "object_kind": "tag_push",
+  "event_name": "tag_push",
+  "ref": "refs/tags/demo_ex1",
+  "checkout_sha": "4ea5ae0630b443572891a21f473b3d2563d1e9f5",
+  "user_username": "student2",
+  "project": {
+    "name": "DEMO_Lab_student2"
+  }
+}
+### New submission
+POST http://localhost:8080/receiver
+Content-Type: application/json
+X-Gitlab-Event: Tag Push Hook
+X-Gitlab-Token: secret
+
+{
+  "object_kind": "tag_push",
+  "event_name": "tag_push",
+  "ref": "refs/tags/demo_ex2",
+  "checkout_sha": "7938a3829da78eca0d1f5c94ec236e197a9da68c",
+  "user_username": "student2",
+  "project": {
+    "name": "DEMO_Lab_student2"
+  }
+}
+### New submission
+POST http://localhost:8080/receiver
+Content-Type: application/json
+X-Gitlab-Event: Tag Push Hook
+X-Gitlab-Token: secret
+
+{
+  "object_kind": "tag_push",
+  "event_name": "tag_push",
+  "ref": "refs/tags/demo_ex3",
+  "checkout_sha": "bfbc1445367facdf879893b03cdff01993307df6",
+  "user_username": "student2",
+  "project": {
+    "name": "DEMO_Lab_student2"
+  }
+}
+### New submission
+POST http://localhost:8080/receiver
+Content-Type: application/json
+X-Gitlab-Event: Tag Push Hook
+X-Gitlab-Token: secret
+
+{
+  "object_kind": "tag_push",
+  "event_name": "tag_push",
+  "ref": "refs/tags/demo_ex1",
+  "checkout_sha": "b89859be2437f4e6d5573b7512b99cce5b1db06b",
+  "user_username": "student3",
+  "project": {
+    "name": "DEMO_Lab_student3"
+  }
+}
+### New submission
+POST http://localhost:8080/receiver
+Content-Type: application/json
+X-Gitlab-Event: Tag Push Hook
+X-Gitlab-Token: secret
+
+{
+  "object_kind": "tag_push",
+  "event_name": "tag_push",
+  "ref": "refs/tags/demo_ex2",
+  "checkout_sha": "5a712596dc2b90dd800ccdd6a3ef52834ab8a94a",
+  "user_username": "student3",
+  "project": {
+    "name": "DEMO_Lab_student3"
+  }
+}
+### New submission
+POST http://localhost:8080/receiver
+Content-Type: application/json
+X-Gitlab-Event: Tag Push Hook
+X-Gitlab-Token: secret
+
+{
+  "object_kind": "tag_push",
+  "event_name": "tag_push",
+  "ref": "refs/tags/demo_ex3",
+  "checkout_sha": "d978102f45b930f90d2676c9edd8d9be981a498e",
+  "user_username": "student3",
+  "project": {
+    "name": "DEMO_Lab_student3"
+  }
+}
+### New submission
+POST http://localhost:8080/receiver
+Content-Type: application/json
+X-Gitlab-Event: Tag Push Hook
+X-Gitlab-Token: secret
+
+{
+  "object_kind": "tag_push",
+  "event_name": "tag_push",
+  "ref": "refs/tags/demo_ex1",
+  "checkout_sha": "30868dbcee7db4b191c9fa4f580fbdb83d1a0fe1",
+  "user_username": "student4",
+  "project": {
+    "name": "DEMO_Lab_student4"
+  }
+}
+### New submission
+POST http://localhost:8080/receiver
+Content-Type: application/json
+X-Gitlab-Event: Tag Push Hook
+X-Gitlab-Token: secret
+
+{
+  "object_kind": "tag_push",
+  "event_name": "tag_push",
+  "ref": "refs/tags/demo_ex2",
+  "checkout_sha": "0a5cb8f26d5099bc642fd26584a6019a8b134c67",
+  "user_username": "student4",
+  "project": {
+    "name": "DEMO_Lab_student4"
+  }
+}
+### New submission
+POST http://localhost:8080/receiver
+Content-Type: application/json
+X-Gitlab-Event: Tag Push Hook
+X-Gitlab-Token: secret
+
+{
+  "object_kind": "tag_push",
+  "event_name": "tag_push",
+  "ref": "refs/tags/demo_ex3",
+  "checkout_sha": "6acbc20e9cda3fcced4d30e5aacf3c03e5d46b01",
+  "user_username": "student4",
+  "project": {
+    "name": "DEMO_Lab_student4"
+  }
+}
+### New submission
+POST http://localhost:8080/receiver
+Content-Type: application/json
+X-Gitlab-Event: Tag Push Hook
+X-Gitlab-Token: secret
+
+{
+  "object_kind": "tag_push",
+  "event_name": "tag_push",
+  "ref": "refs/tags/demo_ex1",
+  "checkout_sha": "9886013665fef4426e611c395294410cd3b4346b",
+  "user_username": "student5",
+  "project": {
+    "name": "DEMO_Lab_student5"
+  }
+}
+### New submission
+POST http://localhost:8080/receiver
+Content-Type: application/json
+X-Gitlab-Event: Tag Push Hook
+X-Gitlab-Token: secret
+
+{
+  "object_kind": "tag_push",
+  "event_name": "tag_push",
+  "ref": "refs/tags/demo_ex2",
+  "checkout_sha": "e92fb48fb16a1330309f3e5a474db77ddf0bbeed",
+  "user_username": "student5",
+  "project": {
+    "name": "DEMO_Lab_student5"
+  }
+}
+### New submission
+POST http://localhost:8080/receiver
+Content-Type: application/json
+X-Gitlab-Event: Tag Push Hook
+X-Gitlab-Token: secret
+
+{
+  "object_kind": "tag_push",
+  "event_name": "tag_push",
+  "ref": "refs/tags/demo_ex3",
+  "checkout_sha": "23f5a9272baac4f5dbf86e55ccee33e8114167ea",
+  "user_username": "student5",
+  "project": {
+    "name": "DEMO_Lab_student5"
+  }
+}
+### New submission
+POST http://localhost:8080/receiver
+Content-Type: application/json
+X-Gitlab-Event: Tag Push Hook
+X-Gitlab-Token: secret
+
+{
+  "object_kind": "tag_push",
+  "event_name": "tag_push",
+  "ref": "refs/tags/demo_ex1",
+  "checkout_sha": "68bbad231f9947a66dbb812bc01683180dcd6755",
+  "user_username": "student6",
+  "project": {
+    "name": "DEMO_Lab_student6"
+  }
+}
+### New submission
+POST http://localhost:8080/receiver
+Content-Type: application/json
+X-Gitlab-Event: Tag Push Hook
+X-Gitlab-Token: secret
+
+{
+  "object_kind": "tag_push",
+  "event_name": "tag_push",
+  "ref": "refs/tags/demo_ex2",
+  "checkout_sha": "bde1693f401fc0fb2e79aff8a44bd9618c1ff823",
+  "user_username": "student6",
+  "project": {
+    "name": "DEMO_Lab_student6"
+  }
+}
+### New submission
+POST http://localhost:8080/receiver
+Content-Type: application/json
+X-Gitlab-Event: Tag Push Hook
+X-Gitlab-Token: secret
+
+{
+  "object_kind": "tag_push",
+  "event_name": "tag_push",
+  "ref": "refs/tags/demo_ex3",
+  "checkout_sha": "d05314e708e6be80ae405f51867e83c60c0ba728",
+  "user_username": "student6",
+  "project": {
+    "name": "DEMO_Lab_student6"
+  }
+}
